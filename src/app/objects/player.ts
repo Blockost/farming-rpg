@@ -37,8 +37,15 @@ export default class Player extends Phaser.GameObjects.Sprite {
       this.moveUp();
     } else {
       // No movement, go idle
-      this.arcadeSprite.setVelocity(0);
       this.idle();
+    }
+
+    if (!cursors.left.isDown && !cursors.right.isDown) {
+      this.arcadeSprite.setVelocityX(0);
+    }
+
+    if (!cursors.up.isDown && !cursors.down.isDown) {
+      this.arcadeSprite.setVelocityY(0);
     }
   }
 
