@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import MainScene from './scenes/main.scene';
 import GameConstants from './utils/gameConstants';
 
@@ -7,11 +7,12 @@ import GameConstants from './utils/gameConstants';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  private gameConfig: Phaser.Types.Core.GameConfig;
   private game: Phaser.Game;
 
   constructor() {
-    const gameConfig: Phaser.Types.Core.GameConfig = {
+    this.gameConfig = {
       type: Phaser.AUTO,
       width: GameConstants.width,
       height: GameConstants.height,
@@ -24,7 +25,9 @@ export class AppComponent {
       },
       scene: MainScene
     };
+  }
 
-    this.game = new Phaser.Game(gameConfig);
+  ngOnInit() {
+    this.game = new Phaser.Game(this.gameConfig);
   }
 }
