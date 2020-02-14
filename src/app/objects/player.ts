@@ -1,13 +1,22 @@
 import * as Phaser from 'phaser';
-import GameConstants from '../utils/gameConstants';
 import AnimationHelper from '../utils/animationHelper';
+import { FacingDirection } from '../utils/facingDirection';
 
 export default class Player extends Phaser.GameObjects.Sprite {
   private readonly PLAYER_VELOCITY_X = 120;
   private readonly PLAYER_VELOCITY_Y = 120;
+  private readonly ANIMATION_WALK_LEFT = 'WALK_LEFT';
+  private readonly ANIMATION_IDLE_LEFT = 'IDLE_LEFT';
+  private readonly ANIMATION_WALK_RIGHT = 'WALK_RIGHT';
+  private readonly ANIMATION_IDLE_RIGHT = 'IDLE_RIGHT';
+  private readonly ANIMATION_WALK_UP = 'WALK_UP';
+  private readonly ANIMATION_IDLE_UP = 'IDLE_UP';
+  private readonly ANIMATION_WALK_DOWN = 'WALK_DOWN';
+  private readonly ANIMATION_IDLE_DOWN = 'IDLE_DOWN';
 
   private arcadeSprite: Phaser.Physics.Arcade.Sprite;
   private textureKey: string;
+  private facingDirection: FacingDirection = FacingDirection.DOWN;
 
   constructor(scene: Phaser.Scene, textureKey: string) {
     super(scene, 100, 300, textureKey);
@@ -19,17 +28,60 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
     if (cursors.left.isDown) {
-      this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X * -1).play('left', true);
+      this.moveLeft();
     } else if (cursors.right.isDown) {
-      this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X).play('right', true);
+      this.moveRight();
     } else if (cursors.down.isDown) {
-      this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y).play('down', true);
+      this.moveDown();
     } else if (cursors.up.isDown) {
-      this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y * -1).play('up', true);
+      this.moveUp();
     } else {
-      // No movement
+      // No movement, go idle
       this.arcadeSprite.setVelocity(0);
-      // TODO: 2020-02-14 Blockost Play idle animation
+      this.idle();
+    }
+  }
+
+  private moveLeft() {
+    this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X * -1).play(this.ANIMATION_WALK_LEFT, true);
+    this.facingDirection = FacingDirection.LEFT;
+  }
+
+  private moveRight() {
+    this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X).play(this.ANIMATION_WALK_RIGHT, true);
+    this.facingDirection = FacingDirection.RIGHT;
+  }
+
+  private moveUp() {
+    this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y * -1).play(this.ANIMATION_WALK_UP, true);
+    this.facingDirection = FacingDirection.UP;
+  }
+
+  private moveDown() {
+    this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y).play(this.ANIMATION_WALK_DOWN, true);
+    this.facingDirection = FacingDirection.DOWN;
+  }
+
+  private idle() {
+    switch (this.facingDirection) {
+      case FacingDirection.LEFT:
+        this.arcadeSprite.play(this.ANIMATION_IDLE_LEFT);
+        break;
+
+      case FacingDirection.RIGHT:
+        this.arcadeSprite.play(this.ANIMATION_IDLE_RIGHT);
+        break;
+
+      case FacingDirection.UP:
+        this.arcadeSprite.play(this.ANIMATION_IDLE_UP);
+        break;
+
+      case FacingDirection.DOWN:
+        this.arcadeSprite.play(this.ANIMATION_IDLE_DOWN);
+        break;
+
+      default:
+        throw new Error(`Unsupported facing direction ${this.facingDirection}`);
     }
   }
 
@@ -37,31 +89,45 @@ export default class Player extends Phaser.GameObjects.Sprite {
     // Walk left
     let [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 9, length: 7, offsetStart: 1 });
     this.scene.anims.create({
-      key: 'left',
+      key: this.ANIMATION_WALK_LEFT,
       frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
         start: startIndex,
         end: endIndex
       }),
       repeat: -1,
+      frameRate: 10
+    });
+
+    // Idle left
+    this.scene.anims.create({
+      key: this.ANIMATION_IDLE_LEFT,
+      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
       frameRate: 10
     });
 
     // Walk right
     [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 11, length: 7, offsetStart: 1 });
     this.scene.anims.create({
-      key: 'right',
+      key: this.ANIMATION_WALK_RIGHT,
       frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
         start: startIndex,
         end: endIndex
       }),
       repeat: -1,
+      frameRate: 10
+    });
+
+    // Idle Right
+    this.scene.anims.create({
+      key: this.ANIMATION_IDLE_RIGHT,
+      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
       frameRate: 10
     });
 
     // Walk up
     [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 8, length: 7, offsetStart: 1 });
     this.scene.anims.create({
-      key: 'up',
+      key: this.ANIMATION_WALK_UP,
       frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
         start: startIndex,
         end: endIndex
@@ -70,15 +136,29 @@ export default class Player extends Phaser.GameObjects.Sprite {
       frameRate: 10
     });
 
+    // Idle left
+    this.scene.anims.create({
+      key: this.ANIMATION_IDLE_UP,
+      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
+      frameRate: 10
+    });
+
     // Walk down
     [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 10, length: 7, offsetStart: 1 });
     this.scene.anims.create({
-      key: 'down',
+      key: this.ANIMATION_WALK_DOWN,
       frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
         start: startIndex,
         end: endIndex
       }),
       repeat: -1,
+      frameRate: 10
+    });
+
+    // Idle left
+    this.scene.anims.create({
+      key: this.ANIMATION_IDLE_DOWN,
+      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
       frameRate: 10
     });
   }

@@ -25,6 +25,7 @@ export interface AnimationConfig {
 export default class AnimationHelper {
   /**
    * Retrieves start and end frame indexes needed to generate an Animation from a Spritesheet in Phaser 3.
+   * @returns an array containing [startIndex, endIndex]
    */
   static getFrameIndexes(animationConfig: AnimationConfig): [number, number] {
     const frameStart =
