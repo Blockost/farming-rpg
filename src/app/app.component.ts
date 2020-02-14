@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import MainScene from './scenes/main.scene';
+import GameConstants from './utils/gameConstants';
 
 @Component({
   selector: 'app-root',
@@ -12,12 +13,12 @@ export class AppComponent {
   constructor() {
     const gameConfig: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      width: GameConstants.width,
+      height: GameConstants.height,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 300 },
+          gravity: { y: GameConstants.physics.gravity },
           debug: false
         }
       },

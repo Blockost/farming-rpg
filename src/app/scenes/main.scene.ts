@@ -1,7 +1,12 @@
 import BaseScene from './base.scene';
 import { SceneKeys } from './sceneKeys';
+import Player from '../objects/player';
+import GameConstants from '../utils/gameConstants';
 
 export default class MainScene extends BaseScene {
+  private player: Player;
+  private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+
   constructor() {
     super(SceneKeys.MainScene);
   }
@@ -9,30 +14,23 @@ export default class MainScene extends BaseScene {
   preload() {
     super.preload();
 
-    this.load.setBaseURL('http://labs.phaser.io');
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
+    this.load.spritesheet('player', '/assets/spritesheets/light.png', {
+      frameWidth: GameConstants.sprite.width,
+      frameHeight: GameConstants.sprite.height
+    });
   }
 
   create() {
     super.create();
 
-    this.add.image(400, 300, 'sky');
+    this.cursors = this.input.keyboard.createCursorKeys();
 
-    const particleEmitterManager = this.add.particles('red');
-    const emitter = particleEmitterManager.createEmitter({
-      speed: 100,
-      scale: { start: 1, end: 0 },
-      blendMode: 'ADD'
-    });
+    this.player = new Player(this, 'player');
+  }
 
-    const logo = this.physics.add.image(100, 100, 'logo');
-    logo.setVelocity(100, 200);
-    logo.setBounce(1, 1);
-    logo.setCollideWorldBounds(true);
-    logo.setGravityY(-200);
+  update(time: number, delta: number) {
+    super.update(time, delta);
 
-    emitter.startFollow(logo);
+    this.player.update(time, delta, this.cursors);
   }
 }
