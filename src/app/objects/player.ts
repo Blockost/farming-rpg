@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
 import AnimationHelper from '../utils/animationHelper';
-import { FacingDirection } from '../utils/facingDirection';
+import FacingDirection from '../utils/facingDirection';
+import GameConstants from '../utils/gameConstants';
+import TiledSpawnPoint from './tiled/tiledSpawnPoint';
 
 export default class Player extends Phaser.GameObjects.Sprite {
   private readonly PLAYER_VELOCITY_X = 120;
@@ -14,19 +16,37 @@ export default class Player extends Phaser.GameObjects.Sprite {
   private readonly ANIMATION_WALK_DOWN = 'WALK_DOWN';
   private readonly ANIMATION_IDLE_DOWN = 'IDLE_DOWN';
 
+  private readonly PLAYER_BBOX_WIDTH = 20;
+  private readonly PLAYER_BBOX_HEIGHT = 10;
+
   private arcadeSprite: Phaser.Physics.Arcade.Sprite;
   private textureKey: string;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
 
-  constructor(scene: Phaser.Scene, textureKey: string) {
-    super(scene, 100, 300, textureKey);
+  constructor(scene: Phaser.Scene, textureKey: string, spawnPoint: TiledSpawnPoint) {
+    super(scene, spawnPoint.x, spawnPoint.y, textureKey);
     this.textureKey = textureKey;
 
-    this.arcadeSprite = this.scene.physics.add.sprite(100, 300, textureKey).setCollideWorldBounds(true);
+    this.arcadeSprite = this.scene.physics.add
+      .sprite(spawnPoint.x, spawnPoint.y, textureKey)
+      .setCollideWorldBounds(true);
+
+    // Resize player's bounding box and place it at bottom center of the sprite
+    this.arcadeSprite.body
+      .setSize(this.PLAYER_BBOX_WIDTH, this.PLAYER_BBOX_HEIGHT)
+      .setOffset(
+        (GameConstants.sprite.width - this.PLAYER_BBOX_WIDTH) / 2,
+        GameConstants.sprite.height - this.PLAYER_BBOX_HEIGHT
+      );
+
     this.registerAnimations();
   }
 
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
+    // Reset velocity from previous frame
+    this.applyVelocityX(0);
+    this.applyVelocityY(0);
+
     if (cursors.left.isDown) {
       this.moveLeft();
     } else if (cursors.right.isDown) {
@@ -39,52 +59,65 @@ export default class Player extends Phaser.GameObjects.Sprite {
       // No movement, go idle
       this.idle();
     }
+  }
 
-    if (!cursors.left.isDown && !cursors.right.isDown) {
-      this.arcadeSprite.setVelocityX(0);
-    }
+  addCollisionDetectionWith(gameObject: Phaser.GameObjects.GameObject) {
+    this.scene.physics.add.collider(this.arcadeSprite, gameObject);
+  }
 
-    if (!cursors.up.isDown && !cursors.down.isDown) {
-      this.arcadeSprite.setVelocityY(0);
-    }
+  play(animationkey: string, ignoreIfPlaying?: boolean, startFrame?: number): Phaser.GameObjects.Sprite {
+    // TODO: 2020-02-15 Blockost Play animation of all sprites in groups
+    return this.arcadeSprite.play(animationkey, ignoreIfPlaying, startFrame);
   }
 
   private moveLeft() {
-    this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X * -1).play(this.ANIMATION_WALK_LEFT, true);
+    this.applyVelocityX(this.PLAYER_VELOCITY_X * -1);
+    this.play(this.ANIMATION_WALK_LEFT, true);
     this.facingDirection = FacingDirection.LEFT;
   }
 
   private moveRight() {
-    this.arcadeSprite.setVelocityX(this.PLAYER_VELOCITY_X).play(this.ANIMATION_WALK_RIGHT, true);
+    this.applyVelocityX(this.PLAYER_VELOCITY_X);
+    this.play(this.ANIMATION_WALK_RIGHT, true);
     this.facingDirection = FacingDirection.RIGHT;
   }
 
   private moveUp() {
-    this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y * -1).play(this.ANIMATION_WALK_UP, true);
+    this.applyVelocityY(this.PLAYER_VELOCITY_Y * -1);
+    this.play(this.ANIMATION_WALK_UP, true);
     this.facingDirection = FacingDirection.UP;
   }
 
   private moveDown() {
-    this.arcadeSprite.setVelocityY(this.PLAYER_VELOCITY_Y).play(this.ANIMATION_WALK_DOWN, true);
+    this.applyVelocityY(this.PLAYER_VELOCITY_Y);
+    this.play(this.ANIMATION_WALK_DOWN, true);
     this.facingDirection = FacingDirection.DOWN;
+  }
+
+  private applyVelocityX(velocity: number) {
+    this.arcadeSprite.setVelocityX(velocity);
+  }
+
+  private applyVelocityY(velocity: number) {
+    this.arcadeSprite.setVelocityY(velocity);
   }
 
   private idle() {
     switch (this.facingDirection) {
       case FacingDirection.LEFT:
-        this.arcadeSprite.play(this.ANIMATION_IDLE_LEFT);
+        this.play(this.ANIMATION_IDLE_LEFT);
         break;
 
       case FacingDirection.RIGHT:
-        this.arcadeSprite.play(this.ANIMATION_IDLE_RIGHT);
+        this.play(this.ANIMATION_IDLE_RIGHT);
         break;
 
       case FacingDirection.UP:
-        this.arcadeSprite.play(this.ANIMATION_IDLE_UP);
+        this.play(this.ANIMATION_IDLE_UP);
         break;
 
       case FacingDirection.DOWN:
-        this.arcadeSprite.play(this.ANIMATION_IDLE_DOWN);
+        this.play(this.ANIMATION_IDLE_DOWN);
         break;
 
       default:
@@ -169,6 +202,4 @@ export default class Player extends Phaser.GameObjects.Sprite {
       frameRate: 10
     });
   }
-
-  private updateAnimation(cursors: Phaser.Types.Input.Keyboard.CursorKeys) {}
 }

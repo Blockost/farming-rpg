@@ -9,7 +9,9 @@ const GameConstants = {
     maxNumberOfSpritesPerRow: 13
   },
   physics: {
-    gravity: 0
+    gravity: 0,
+    showEngineDebug: true,
+    debugCollidingTiles: true
   }
 };
 

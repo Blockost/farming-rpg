@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
         default: 'arcade',
         arcade: {
           gravity: { y: GameConstants.physics.gravity },
-          debug: false
+          debug: GameConstants.physics.showEngineDebug
         }
       },
       scene: MainScene
