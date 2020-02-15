@@ -4,7 +4,7 @@ import FacingDirection from '../utils/facingDirection';
 import GameConstants from '../utils/gameConstants';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
 
-export default class Player extends Phaser.GameObjects.Sprite {
+export default class Player {
   private readonly PLAYER_VELOCITY_X = 120;
   private readonly PLAYER_VELOCITY_Y = 120;
   private readonly ANIMATION_WALK_LEFT = 'WALK_LEFT';
@@ -19,20 +19,19 @@ export default class Player extends Phaser.GameObjects.Sprite {
   private readonly PLAYER_BBOX_WIDTH = 20;
   private readonly PLAYER_BBOX_HEIGHT = 10;
 
-  private arcadeSprite: Phaser.Physics.Arcade.Sprite;
+  private scene: Phaser.Scene;
+  private sprite: Phaser.Physics.Arcade.Sprite;
   private textureKey: string;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
 
   constructor(scene: Phaser.Scene, textureKey: string, spawnPoint: TiledSpawnPoint) {
-    super(scene, spawnPoint.x, spawnPoint.y, textureKey);
+    this.scene = scene;
     this.textureKey = textureKey;
 
-    this.arcadeSprite = this.scene.physics.add
-      .sprite(spawnPoint.x, spawnPoint.y, textureKey)
-      .setCollideWorldBounds(true);
+    this.sprite = this.scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, textureKey).setCollideWorldBounds(true);
 
     // Resize player's bounding box and place it at bottom center of the sprite
-    this.arcadeSprite.body
+    this.sprite.body
       .setSize(this.PLAYER_BBOX_WIDTH, this.PLAYER_BBOX_HEIGHT)
       .setOffset(
         (GameConstants.sprite.width - this.PLAYER_BBOX_WIDTH) / 2,
@@ -62,12 +61,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   addCollisionDetectionWith(gameObject: Phaser.GameObjects.GameObject) {
-    this.scene.physics.add.collider(this.arcadeSprite, gameObject);
-  }
-
-  play(animationkey: string, ignoreIfPlaying?: boolean, startFrame?: number): Phaser.GameObjects.Sprite {
-    // TODO: 2020-02-15 Blockost Play animation of all sprites in groups
-    return this.arcadeSprite.play(animationkey, ignoreIfPlaying, startFrame);
+    this.scene.physics.add.collider(this.sprite, gameObject);
   }
 
   private moveLeft() {
@@ -95,11 +89,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   private applyVelocityX(velocity: number) {
-    this.arcadeSprite.setVelocityX(velocity);
+    this.sprite.setVelocityX(velocity);
   }
 
   private applyVelocityY(velocity: number) {
-    this.arcadeSprite.setVelocityY(velocity);
+    this.sprite.setVelocityY(velocity);
   }
 
   private idle() {
@@ -201,5 +195,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
       frames: [{ key: this.textureKey, frame: startIndex - 1 }],
       frameRate: 10
     });
+  }
+
+  private play(animationkey: string, ignoreIfPlaying?: boolean, startFrame?: number): Phaser.GameObjects.Sprite {
+    // TODO: 2020-02-15 Blockost Play animation of all sprites in groups
+    return this.sprite.play(animationkey, ignoreIfPlaying, startFrame);
   }
 }
