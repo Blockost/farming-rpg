@@ -1,6 +1,6 @@
 const GameConstants = {
   width: 800,
-  height: 600,
+  height: 640,
   sprite: {
     width: 64,
     height: 64,

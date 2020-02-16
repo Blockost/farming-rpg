@@ -20,13 +20,10 @@ export default class MainScene extends BaseScene {
       frameHeight: GameConstants.sprite.height
     });
 
-    this.load.spritesheet('hair_male_green', '/assets/spritesheets/characters/hair/male/green.png', {
-      frameWidth: GameConstants.sprite.width,
-      frameHeight: GameConstants.sprite.height
-    });
-
-    this.load.image('tiles', '/assets/tilesets/tuxmon-sample-32px.png');
-    this.load.tilemapTiledJSON('tilemap', '/assets/tilemaps/test.json');
+    // Load map and associated tilesets
+    this.load.tilemapTiledJSON('map_farm', '/assets/tilemaps/farm.json');
+    this.load.image('tileset_terrain', '/assets/spritesheets/tiled/terrain.png');
+    this.load.image('tileset_cottage', '/assets/spritesheets/tiled/cottage.png');
   }
 
   create() {
@@ -36,18 +33,23 @@ export default class MainScene extends BaseScene {
     this.cursors = this.input.keyboard.createCursorKeys();
 
     // Create world from tilemap
-    const tilemap = this.make.tilemap({ key: 'tilemap' });
-    const tileset = tilemap.addTilesetImage('tuxmon-sample-32px', 'tiles');
-    const belowPlayer = tilemap.createStaticLayer('Below player', tileset);
-    const playerLevelLayer = tilemap.createStaticLayer('Player level', tileset);
-    const abovePlayerLayer = tilemap.createStaticLayer('Above Player', tileset);
+    const farmMap = this.make.tilemap({ key: 'map_farm' });
+    const terrainTileset = farmMap.addTilesetImage('terrain', 'tileset_terrain');
+    const cottageTileset = farmMap.addTilesetImage('cottage', 'tileset_cottage');
+
+    const belowPlayerL1 = farmMap.createStaticLayer('below_player_L1', terrainTileset);
+    const belowPlayerL2 = farmMap.createStaticLayer('below_player_L2', terrainTileset);
+    const playerLevelLayerL1 = farmMap.createStaticLayer('player_level_L1', [terrainTileset, cottageTileset]);
+    const playerLevelLayerL2 = farmMap.createStaticLayer('player_level_L2', [terrainTileset, cottageTileset]);
+    const abovePlayerLayer = farmMap.createStaticLayer('above_player', cottageTileset);
 
     // Enable collision on tiles having with the 'collides' property
-    playerLevelLayer.setCollisionByProperty({ collides: true });
+    playerLevelLayerL1.setCollisionByProperty({ collides: true });
+    playerLevelLayerL2.setCollisionByProperty({ collides: true });
 
     if (GameConstants.physics.debugCollidingTiles) {
       const debugGraphics = this.add.graphics().setAlpha(0.75);
-      playerLevelLayer.renderDebug(debugGraphics, {
+      playerLevelLayerL1.renderDebug(debugGraphics, {
         tileColor: null, // No color for non-colliding tiles
         collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
         faceColor: new Phaser.Display.Color(40, 39, 37, 255)
@@ -55,7 +57,7 @@ export default class MainScene extends BaseScene {
     }
 
     // Retrieve player spawn point
-    const playerSpawnPoint = TilemapHelper.getSpawnPoint(tilemap, 'Player');
+    const playerSpawnPoint = TilemapHelper.getSpawnPoint(farmMap, 'Player');
 
     // Finally, create player. Must be created last since it needs to be rendered above the world
     this.player = new Player(this, 'player', playerSpawnPoint);
@@ -63,7 +65,7 @@ export default class MainScene extends BaseScene {
     abovePlayerLayer.setDepth(100);
 
     // Add collision between player and world
-    this.player.addCollisionDetectionWith(playerLevelLayer);
+    this.player.addCollisionDetectionWith(playerLevelLayerL1);
   }
 
   update(time: number, delta: number) {
