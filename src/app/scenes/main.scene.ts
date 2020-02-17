@@ -7,6 +7,7 @@ import TilemapHelper from '../utils/tiled/tilemapHelper';
 export default class MainScene extends BaseScene {
   private player: Player;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  debugGraphics: Phaser.GameObjects.Graphics;
 
   constructor() {
     super(SceneKeys.MainScene);
@@ -44,17 +45,14 @@ export default class MainScene extends BaseScene {
     const abovePlayerLayer = farmMap.createStaticLayer('above_player', cottageTileset);
 
     // Enable collision on tiles having with the 'collides' property
+    belowPlayerL1.setCollisionByProperty({ collides: true });
+    belowPlayerL2.setCollisionByProperty({ collides: true });
     playerLevelLayerL1.setCollisionByProperty({ collides: true });
     playerLevelLayerL2.setCollisionByProperty({ collides: true });
 
-    if (GameConstants.physics.debugCollidingTiles) {
-      const debugGraphics = this.add.graphics().setAlpha(0.75);
-      playerLevelLayerL1.renderDebug(debugGraphics, {
-        tileColor: null, // No color for non-colliding tiles
-        collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
-        faceColor: new Phaser.Display.Color(40, 39, 37, 255)
-      });
-    }
+    // Add graphics debug
+    this.debugGraphics = this.add.graphics().setAlpha(0.75);
+    this.renderDebugGraphicsFor([belowPlayerL1, belowPlayerL2, playerLevelLayerL1, playerLevelLayerL2]);
 
     // Retrieve player spawn point
     const playerSpawnPoint = TilemapHelper.getSpawnPoint(farmMap, 'Player');
@@ -65,12 +63,27 @@ export default class MainScene extends BaseScene {
     abovePlayerLayer.setDepth(100);
 
     // Add collision between player and world
+    this.player.addCollisionDetectionWith(belowPlayerL1);
+    this.player.addCollisionDetectionWith(belowPlayerL2);
     this.player.addCollisionDetectionWith(playerLevelLayerL1);
+    this.player.addCollisionDetectionWith(playerLevelLayerL2);
   }
 
   update(time: number, delta: number) {
     super.update(time, delta);
 
     this.player.update(time, delta, this.cursors);
+  }
+
+  private renderDebugGraphicsFor(layers: Phaser.Tilemaps.StaticTilemapLayer[]) {
+    if (GameConstants.physics.debugCollidingTiles) {
+      layers.forEach((layer) =>
+        layer.renderDebug(this.debugGraphics, {
+          tileColor: null, // No color for non-colliding tiles
+          collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
+          faceColor: new Phaser.Display.Color(40, 39, 37, 255)
+        })
+      );
+    }
   }
 }
