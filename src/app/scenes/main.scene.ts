@@ -8,6 +8,7 @@ export default class MainScene extends BaseScene {
   private player: Player;
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys;
   debugGraphics: Phaser.GameObjects.Graphics;
+  mainCamera: Phaser.Cameras.Scene2D.Camera;
 
   constructor() {
     super(SceneKeys.MainScene);
@@ -63,10 +64,15 @@ export default class MainScene extends BaseScene {
     abovePlayerLayer.setDepth(100);
 
     // Add collision between player and world
-    this.player.addCollisionDetectionWith(belowPlayerL1);
-    this.player.addCollisionDetectionWith(belowPlayerL2);
-    this.player.addCollisionDetectionWith(playerLevelLayerL1);
-    this.player.addCollisionDetectionWith(playerLevelLayerL2);
+    this.physics.add.collider(this.player.getSprite(), belowPlayerL1);
+    this.physics.add.collider(this.player.getSprite(), belowPlayerL2);
+    this.physics.add.collider(this.player.getSprite(), playerLevelLayerL1);
+    this.physics.add.collider(this.player.getSprite(), playerLevelLayerL2);
+
+    // configure camera
+    this.cameras.main
+      .startFollow(this.player.getSprite())
+      .setBounds(0, 0, GameConstants.map.width, GameConstants.map.height);
   }
 
   update(time: number, delta: number) {

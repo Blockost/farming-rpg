@@ -9,7 +9,6 @@ import GameConstants from './utils/gameConstants';
 })
 export class AppComponent implements OnInit {
   private gameConfig: Phaser.Types.Core.GameConfig;
-  private game: Phaser.Game;
 
   constructor() {
     this.gameConfig = {
@@ -28,6 +27,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.game = new Phaser.Game(this.gameConfig);
+    // Start the game
+    new Phaser.Game(this.gameConfig);
   }
 }

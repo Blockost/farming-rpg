@@ -5,8 +5,8 @@ import GameConstants from '../utils/gameConstants';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
 
 export default class Player {
-  private readonly PLAYER_VELOCITY_X = 120;
-  private readonly PLAYER_VELOCITY_Y = 120;
+  private readonly PLAYER_VELOCITY_X = 140;
+  private readonly PLAYER_VELOCITY_Y = 140;
   private readonly ANIMATION_WALK_LEFT = 'WALK_LEFT';
   private readonly ANIMATION_IDLE_LEFT = 'IDLE_LEFT';
   private readonly ANIMATION_WALK_RIGHT = 'WALK_RIGHT';
@@ -28,7 +28,7 @@ export default class Player {
     this.scene = scene;
     this.textureKey = textureKey;
 
-    this.sprite = this.scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, textureKey).setCollideWorldBounds(true);
+    this.sprite = this.scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, textureKey);
 
     // Resize player's bounding box and place it at bottom center of the sprite
     this.sprite.body
@@ -39,6 +39,10 @@ export default class Player {
       );
 
     this.registerAnimations();
+  }
+
+  getSprite(): Phaser.Physics.Arcade.Sprite {
+    return this.sprite;
   }
 
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
@@ -58,10 +62,6 @@ export default class Player {
       // No movement, go idle
       this.idle();
     }
-  }
-
-  addCollisionDetectionWith(gameObject: Phaser.GameObjects.GameObject) {
-    this.scene.physics.add.collider(this.sprite, gameObject);
   }
 
   private moveLeft() {
