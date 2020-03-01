@@ -3,6 +3,8 @@ import GameConstants from '../utils/gameConstants';
 import TilemapHelper from '../utils/tiled/tilemapHelper';
 import BaseScene from './base.scene';
 import { SceneKeys } from './sceneKeys';
+import TiledCollision from '../objects/tiled/tiledCollision';
+import TiledTransition from '../objects/tiled/tiledTransition';
 
 export default class MainScene extends BaseScene {
   private player: Player;
@@ -47,8 +49,8 @@ export default class MainScene extends BaseScene {
     const playerSpawnPoint = TilemapHelper.getSpawnPoint(farmMap, 'Player');
 
     // Retrieve collision objects from map and add them to world
-    const tiledCollisionObjects = TilemapHelper.getCollisionObjects(farmMap);
-    const collisiongroup = this.buildCollisions(tiledCollisionObjects);
+    const tiledCollisionLayer = TilemapHelper.getCollisionLayer(farmMap);
+    const tiledCollisions = this.buildCollisions(tiledCollisionLayer);
 
     // Finally, create player. Must be created last since it needs to be rendered above the world
     this.player = new Player(this, 'player', playerSpawnPoint);
@@ -56,12 +58,21 @@ export default class MainScene extends BaseScene {
     abovePlayerLayer.setDepth(100);
 
     // Add collisions between player and world
-    this.physics.add.collider(this.player.getSprite(), collisiongroup);
+    tiledCollisions.forEach((collision) =>
+      this.physics.add.collider(this.player.getSprite(), collision, (obj1, obj2) => {
+        (obj2 as TiledCollision).onCollide(this.player);
+      })
+    );
 
     // configure camera
     this.cameras.main
       .startFollow(this.player.getSprite())
       .setBounds(0, 0, GameConstants.map.width, GameConstants.map.height);
+
+    // If debug set to true, fill rectangle with debug color
+    if (GameConstants.physics.showCollisionObjectsDebug) {
+      this.showCollisionDebug(tiledCollisions);
+    }
   }
 
   update(time: number, delta: number) {
@@ -71,43 +82,26 @@ export default class MainScene extends BaseScene {
   }
 
   /**
-   * Retrieves all collision objects defined in Tiled, adds them into a Arcade static group and returns it.
-   * This group can then be used to render collision with player.
+   * Retrieves all collision objects defined in Tiled and creates a TiledCollision or TiledTransition
+   * object. This object can then be used to create collisions with player or transition between
+   * scenes.
    *
-   * This method ignores invisible ojects in Tiled.
+   * This method ignores invisible objects in Tiled.
    */
-  private buildCollisions(collisionObjects: Phaser.Types.Tilemaps.TiledObject[]): Phaser.Physics.Arcade.StaticGroup {
-    const collisiongroup = this.physics.add.staticGroup();
-
-    collisionObjects
-      // Filter out non visible objects
+  private buildCollisions(collisionObjects: Phaser.Types.Tilemaps.TiledObject[]): TiledCollision[] {
+    // Filter out non visible objects
+    return collisionObjects
       .filter((obj) => obj.visible)
-      // For each, create a rectangle and add it to the Arcade static group
-      .forEach((obj) => {
-        // XXX: 2020-03-01 Blockost Arcade physics only support collisions with rectangle shapes.
-        // It is possible to render more complex shapes like polygons but its physics body will still
-        // be a rectangle. If there's a need to enable collisions with more complex shapes, we'll need
-        // to switch to Matter.js
-        if (!obj.rectangle) {
-          throw new Error(
-            'Arcade physics only support collisions with rectangle shapes. ' +
-              'Please, use rectangle objects to define collitions in Tiled.'
-          );
+      .map((obj) => {
+        if (obj.properties && obj.properties.transitionTo) {
+          return new TiledTransition(this, obj);
         }
 
-        const boundingBox = this.add.rectangle(obj.x, obj.y, obj.width, obj.height);
-
-        // Update origin from (0.5, 0.5) to (0, 0) because that's how it works in Tiled
-        boundingBox.setOrigin(0, 0);
-
-        // If debug set to true, fill rectangle with debug color
-        if (GameConstants.physics.debugCollidingTiles) {
-          boundingBox.setFillStyle(0xf38630, 0.75);
-        }
-
-        collisiongroup.add(boundingBox);
+        return new TiledCollision(this, obj);
       });
+  }
 
-    return collisiongroup;
+  private showCollisionDebug(tiledCollisions: TiledCollision[]) {
+    tiledCollisions.forEach((tiledCollision) => tiledCollision.showDebug());
   }
 }

@@ -57,7 +57,7 @@
          "offsety":32,
          "opacity":1,
          "type":"tilelayer",
-         "visible":false,
+         "visible":true,
          "width":50,
          "x":0,
          "y":0
@@ -191,6 +191,18 @@
                  "height":22.8360754966159,
                  "id":38,
                  "name":"",
+                 "properties":
+                    {
+                     "transitionFacingEnd":"UP",
+                     "transitionFacingStart":"UP",
+                     "transitionTo":"inner_house_floor"
+                    },
+                 "propertytypes":
+                    {
+                     "transitionFacingEnd":"string",
+                     "transitionFacingStart":"string",
+                     "transitionTo":"string"
+                    },
                  "rotation":0,
                  "type":"",
                  "visible":true,

@@ -21,7 +21,7 @@ export default class TilemapHelper {
   /**
    * Retrieves the collision layer from the given Tiled map.
    */
-  static getCollisionObjects(tilemap: Phaser.Tilemaps.Tilemap): Phaser.Types.Tilemaps.TiledObject[] {
+  static getCollisionLayer(tilemap: Phaser.Tilemaps.Tilemap): Phaser.Types.Tilemaps.TiledObject[] {
     return tilemap.objects.find((objectLayer) => objectLayer.name === COLLISIONS_LAYER_KEY).objects;
   }
 }

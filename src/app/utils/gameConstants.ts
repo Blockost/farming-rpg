@@ -21,7 +21,7 @@ const GameConstants = {
   physics: {
     gravity: 0,
     showEngineDebug: true,
-    debugCollidingTiles: true
+    showCollisionObjectsDebug: true
   }
 };
 

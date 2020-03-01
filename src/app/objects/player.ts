@@ -45,6 +45,10 @@ export default class Player {
     return this.sprite;
   }
 
+  getFacingDirection(): FacingDirection {
+    return this.facingDirection;
+  }
+
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
     // Reset velocity from previous frame
     this.applyVelocityX(0);
