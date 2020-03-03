@@ -36,7 +36,6 @@ export default class TiledTransition extends TiledCollision {
   }
 
   onCollide(player: Player) {
-    console.log('TiledTransition has been hit by player');
     if (player.getFacingDirection() === this.transitionFacingStart) {
       console.log('Player is facing the right way. Initiating transition to next scene', this.transitionTo);
       // TODO: 2020-03-01 Blockost
