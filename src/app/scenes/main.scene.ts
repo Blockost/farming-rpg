@@ -67,7 +67,12 @@ export default class MainScene extends BaseScene {
     // configure camera
     this.cameras.main
       .startFollow(this.player.getSprite())
-      .setBounds(0, 0, GameConfig.map.width, GameConfig.map.height);
+      .setBounds(
+        0,
+        0,
+        GameConfig.map.width * GameConfig.map.tile.width,
+        GameConfig.map.height * GameConfig.map.tile.height
+      );
 
     // If debug set to true, fill rectangle with debug color
     if (GameConfig.physics.showCollisionObjectsDebug) {

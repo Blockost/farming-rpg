@@ -11,8 +11,12 @@ const GameConfig = {
    * Size of the maps (levels)
    */
   map: {
-    width: 1600,
-    height: 1280
+    width: 40, // In number of tiles
+    height: 30, // In number of tiles
+    tile: {
+      width: 32,
+      height: 32
+    }
   },
   sprite: {
     width: 64,
