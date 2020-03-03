@@ -1,4 +1,7 @@
-const GameConstants = {
+/**
+ * Game configuration.
+ */
+const GameConfig = {
   /**
    * Size of the canvas in the HTML page
    */
@@ -20,9 +23,9 @@ const GameConstants = {
   },
   physics: {
     gravity: 0,
-    showEngineDebug: true,
+    showEngineDebug: false,
     showCollisionObjectsDebug: true
   }
 };
 
-export default GameConstants;
+export default GameConfig;

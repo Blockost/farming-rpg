@@ -1,5 +1,4 @@
-import GameConstants from './gameConstants';
-import { config } from 'rxjs';
+import GameConfig from './gameConfig';
 
 /**
  * Animation configuration.
@@ -29,7 +28,7 @@ export default class AnimationHelper {
    */
   static getFrameIndexes(animationConfig: AnimationConfig): [number, number] {
     const frameStart =
-      GameConstants.spritesheet.maxNumberOfSpritesPerRow * animationConfig.rowStart + animationConfig.offsetStart;
+      GameConfig.spritesheet.maxNumberOfSpritesPerRow * animationConfig.rowStart + animationConfig.offsetStart;
     const frameEnd = frameStart + animationConfig.length;
 
     return [frameStart, frameEnd];

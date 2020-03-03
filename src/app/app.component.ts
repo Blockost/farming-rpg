@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import MainScene from './scenes/main.scene';
-import GameConstants from './utils/gameConstants';
+import GameConfig from './utils/gameConfig';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +13,13 @@ export class AppComponent implements OnInit {
   constructor() {
     this.gameConfig = {
       type: Phaser.AUTO,
-      width: GameConstants.width,
-      height: GameConstants.height,
+      width: GameConfig.width,
+      height: GameConfig.height,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: GameConstants.physics.gravity },
-          debug: GameConstants.physics.showEngineDebug
+          gravity: { y: GameConfig.physics.gravity },
+          debug: GameConfig.physics.showEngineDebug
         }
       },
       scene: MainScene

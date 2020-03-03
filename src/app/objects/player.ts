@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import AnimationHelper from '../utils/animationHelper';
 import FacingDirection from '../utils/facingDirection';
-import GameConstants from '../utils/gameConstants';
+import GameConfig from '../utils/gameConfig';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
 
 export default class Player {
@@ -34,8 +34,8 @@ export default class Player {
     this.sprite.body
       .setSize(this.PLAYER_BBOX_WIDTH, this.PLAYER_BBOX_HEIGHT)
       .setOffset(
-        (GameConstants.sprite.width - this.PLAYER_BBOX_WIDTH) / 2,
-        GameConstants.sprite.height - this.PLAYER_BBOX_HEIGHT
+        (GameConfig.sprite.width - this.PLAYER_BBOX_WIDTH) / 2,
+        GameConfig.sprite.height - this.PLAYER_BBOX_HEIGHT
       );
 
     this.registerAnimations();

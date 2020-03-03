@@ -1,5 +1,5 @@
 import Player from '../objects/player';
-import GameConstants from '../utils/gameConstants';
+import GameConfig from '../utils/gameConfig';
 import TilemapHelper from '../utils/tiled/tilemapHelper';
 import BaseScene from './base.scene';
 import { SceneKeys } from './sceneKeys';
@@ -18,8 +18,8 @@ export default class MainScene extends BaseScene {
     super.preload();
 
     this.load.spritesheet('player', '/assets/spritesheets/characters/body/male/light.png', {
-      frameWidth: GameConstants.sprite.width,
-      frameHeight: GameConstants.sprite.height
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
     });
 
     // Load map and associated tilesets
@@ -67,10 +67,10 @@ export default class MainScene extends BaseScene {
     // configure camera
     this.cameras.main
       .startFollow(this.player.getSprite())
-      .setBounds(0, 0, GameConstants.map.width, GameConstants.map.height);
+      .setBounds(0, 0, GameConfig.map.width, GameConfig.map.height);
 
     // If debug set to true, fill rectangle with debug color
-    if (GameConstants.physics.showCollisionObjectsDebug) {
+    if (GameConfig.physics.showCollisionObjectsDebug) {
       this.showCollisionDebug(tiledCollisions);
     }
   }
