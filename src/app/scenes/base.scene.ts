@@ -1,17 +1,34 @@
 import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
+import TransitionData from './transitionData';
+import Player from '../objects/player';
 
 export default abstract class BaseScene extends Phaser.Scene {
   private customUpdateList: Phaser.GameObjects.GameObject[] = [];
 
+  protected player: Player;
+  protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  /**
+   * Data from the scene it is transitioning from.
+   *
+   * Note that this resolves to an empty object {} for the first scene started.
+   */
+  protected transitionData: TransitionData;
+
+  key: string;
+
   constructor(key: string, config?: Phaser.Types.Scenes.SettingsConfig) {
     super({ key, ...config });
+    this.key = key;
   }
 
   /**
    * Child scenes overridding this method should call it before anything else.
    */
-  init() {
+  init(data: TransitionData) {
+    this.transitionData = data;
+    console.log(this.transitionData);
+
     this.load.addListener('progress', () => {
       const progress = this.load.progress;
       if (!isNaN(progress)) {
@@ -38,7 +55,9 @@ export default abstract class BaseScene extends Phaser.Scene {
   /**
    * Child scenes overridding this method should call it before anything else.
    */
-  create() {}
+  create() {
+    this.cursors = this.input.keyboard.createCursorKeys();
+  }
 
   /**
    * Child scenes overridding this method should call it before anything else.

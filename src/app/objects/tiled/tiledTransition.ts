@@ -2,6 +2,8 @@ import * as Phaser from 'phaser';
 import FacingDirection, { parseFacingDirection } from 'src/app/utils/facingDirection';
 import TiledCollision from './tiledCollision';
 import Player from '../player';
+import TransitionData from 'src/app/scenes/transitionData';
+import SceneKey, { parseSceneKey } from 'src/app/scenes/sceneKey';
 
 /**
  * Class that represents a Tiled transition (usually through a collision object)
@@ -12,9 +14,9 @@ export default class TiledTransition extends TiledCollision {
   protected DEBUG_ALPHA = 0.75;
 
   /**
-   * The scene to transition to
+   * The scene to transition to.
    */
-  private transitionTo: string;
+  private transitionTo: SceneKey;
 
   /**
    * The direction the player needs to be facing to in order to trigger the transition.
@@ -22,23 +24,44 @@ export default class TiledTransition extends TiledCollision {
   private transitionFacingStart: FacingDirection;
 
   /**
-   * The direction the player will be facing to at the end of the transition when
-   * the sceen has been rendered.
+   * Name of target spawn point where to spawn the player in the target scene.
+   *
+   * This must to be a valid spawn point object in the target map or it will fail
+   * on scene creation.
    */
-  private transitionFacingEnd: FacingDirection;
+  private targetSpawnPointName: string;
 
-  constructor(scene: Phaser.Scene, tiledObject: Phaser.Types.Tilemaps.TiledObject) {
+  constructor(scene: Phaser.Scene, tiledObject: Phaser.Types.Tilemaps.TiledObject, targetSpawnPoint: string) {
     super(scene, tiledObject);
 
-    this.transitionTo = tiledObject.properties.transitionTo;
+    this.transitionTo = parseSceneKey(tiledObject.properties.transitionTo);
     this.transitionFacingStart = parseFacingDirection(tiledObject.properties.transitionFacingStart);
-    this.transitionFacingEnd = parseFacingDirection(tiledObject.properties.transitionFacingEnd);
+    this.targetSpawnPointName = targetSpawnPoint;
   }
 
   onCollide(player: Player) {
     if (player.getFacingDirection() === this.transitionFacingStart) {
-      console.log('Player is facing the right way. Initiating transition to next scene', this.transitionTo);
-      // TODO: 2020-03-01 Blockost
+      const transitionData: TransitionData = {
+        player: player,
+        targetSpawnPointName: this.targetSpawnPointName
+      };
+
+      // this.scene.cameras.main.fadeOut(1000, 0, 0, 0, () => console.log('fading out'))
+      // this.scene.scene.pause(this.scene.scene.key);
+      this.scene.scene.start(this.transitionTo, transitionData);
+
+      // this.scene.scene.transition({
+      //   target: this.transitionTo,
+      //   duration: 1000,
+      //   onUpdate: this.onTransitionUpdate.bind(this),
+      //   allowInput: false,
+      //   sleep: true,
+      //   data: { player: player }
+      // });
     }
+  }
+
+  private onTransitionUpdate() {
+    console.log('Performing transition');
   }
 }

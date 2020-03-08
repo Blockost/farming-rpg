@@ -9,7 +9,7 @@ enum FacingDirection {
 }
 
 export function parseFacingDirection(direction: string): FacingDirection {
-  direction = direction.toUpperCase();
+  direction = direction.trim().toUpperCase();
   switch (direction) {
     case 'LEFT':
       return FacingDirection.LEFT;

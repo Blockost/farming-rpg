@@ -11,9 +11,7 @@ const GameConfig = {
    * Size of the maps (levels)
    */
   map: {
-    width: 40, // In number of tiles
-    height: 30, // In number of tiles
-    tile: {
+    tileSize: {
       width: 32,
       height: 32
     }
@@ -27,7 +25,7 @@ const GameConfig = {
   },
   physics: {
     gravity: 0,
-    showEngineDebug: false,
+    showEngineDebug: true,
     showCollisionObjectsDebug: true
   }
 };

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import MainScene from './scenes/main.scene';
+import FarmExteriorScene from './scenes/farm-exterior.scene';
 import GameConfig from './utils/gameConfig';
+import FarmHouseFloorScene from './scenes/farm-house-floor.scene';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,7 @@ export class AppComponent implements OnInit {
           debug: GameConfig.physics.showEngineDebug
         }
       },
-      scene: MainScene
+      scene: [FarmExteriorScene, FarmHouseFloorScene]
     };
   }
 

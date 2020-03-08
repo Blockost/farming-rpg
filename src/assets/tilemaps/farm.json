@@ -70,13 +70,41 @@
                  "ellipse":true,
                  "height":0,
                  "id":3,
-                 "name":"Player",
+                 "name":"player_start",
+                 "properties":
+                    {
+                     "facingDirection":"RIGHT"
+                    },
+                 "propertytypes":
+                    {
+                     "facingDirection":"string"
+                    },
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":494.523387321011,
-                 "y":367.463340992353
+                 "x":507.120645564805,
+                 "y":363.017249847485
+                }, 
+                {
+                 "ellipse":true,
+                 "height":0,
+                 "id":42,
+                 "name":"player_from_farm_house_floor",
+                 "properties":
+                    {
+                     "facingDirection":"DOWN"
+                    },
+                 "propertytypes":
+                    {
+                     "facingDirection":"string"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":639.337654345009,
+                 "y":292.914387810377
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -163,7 +191,7 @@
                  "visible":true,
                  "width":61.3711711032918,
                  "x":672.414226971334,
-                 "y":128.013474054523
+                 "y":128
                 }, 
                 {
                  "height":159.16,
@@ -174,7 +202,7 @@
                  "visible":true,
                  "width":189.55100931066,
                  "x":418.189149971892,
-                 "y":128.01
+                 "y":128
                 }, 
                 {
                  "height":41.1074415009486,
@@ -188,18 +216,18 @@
                  "y":265.441641486895
                 }, 
                 {
-                 "height":22.8360754966159,
+                 "height":14.8164034299359,
                  "id":38,
                  "name":"",
                  "properties":
                     {
-                     "transitionFacingEnd":"UP",
+                     "targetSpawnPoint":"player_from_farm_exterior",
                      "transitionFacingStart":"UP",
-                     "transitionTo":"inner_house_floor"
+                     "transitionTo":"FARM_HOUSE_FLOOR"
                     },
                  "propertytypes":
                     {
-                     "transitionFacingEnd":"string",
+                     "targetSpawnPoint":"string",
                      "transitionFacingStart":"string",
                      "transitionTo":"string"
                     },
@@ -227,7 +255,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":42,
+ "nextobjectid":44,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",

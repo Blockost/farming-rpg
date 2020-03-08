@@ -39,6 +39,7 @@ export default class Player {
       );
 
     this.registerAnimations();
+    this.facingDirection = spawnPoint.facingDirection;
   }
 
   getSprite(): Phaser.Physics.Arcade.Sprite {
