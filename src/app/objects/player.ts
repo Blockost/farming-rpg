@@ -50,6 +50,11 @@ export default class Player {
     return this.facingDirection;
   }
 
+  spawnAt(spawnPoint: TiledSpawnPoint) {
+    this.sprite.setPosition(spawnPoint.x, spawnPoint.y);
+    this.facingDirection = spawnPoint.facingDirection;
+  }
+
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
     // Reset velocity from previous frame
     this.applyVelocityX(0);

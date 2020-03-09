@@ -28,22 +28,21 @@ export default class FarmExteriorScene extends BaseScene {
     super.create();
 
     // Create world from tilemap
-    const map = this.make.tilemap({ key: 'map_farm' });
-    const terrainTileset = map.addTilesetImage('terrain', 'tileset_terrain');
-    const cottageTileset = map.addTilesetImage('cottage', 'tileset_cottage');
+    this.map = this.make.tilemap({ key: 'map_farm' });
+    const terrainTileset = this.map.addTilesetImage('terrain', 'tileset_terrain');
+    const cottageTileset = this.map.addTilesetImage('cottage', 'tileset_cottage');
 
-    const belowPlayerL1 = map.createStaticLayer('below_player_L1', terrainTileset);
-    const belowPlayerL2 = map.createStaticLayer('below_player_L2', terrainTileset);
-    const playerLevelLayerL1 = map.createStaticLayer('player_level_L1', [terrainTileset, cottageTileset]);
-    const playerLevelLayerL2 = map.createStaticLayer('player_level_L2', [terrainTileset, cottageTileset]);
-    const abovePlayerLayer = map.createStaticLayer('above_player', cottageTileset);
+    const belowPlayerL1 = this.map.createStaticLayer('below_player_L1', terrainTileset);
+    const belowPlayerL2 = this.map.createStaticLayer('below_player_L2', terrainTileset);
+    const playerLevelLayerL1 = this.map.createStaticLayer('player_level_L1', [terrainTileset, cottageTileset]);
+    const playerLevelLayerL2 = this.map.createStaticLayer('player_level_L2', [terrainTileset, cottageTileset]);
+    const abovePlayerLayer = this.map.createStaticLayer('above_player', cottageTileset);
 
     // Retrieve player spawn point
-    const spawnPointName = this.transitionData.targetSpawnPointName || 'player_start';
-    const playerSpawnPoint = TilemapHelper.getSpawnPoint(map, spawnPointName);
+    const playerSpawnPoint = TilemapHelper.getSpawnPoint(this.map, 'player_start');
 
     // Retrieve collision objects from map and add them to world
-    const tiledCollisions = TilemapHelper.buildCollisions(this, map);
+    const tiledCollisions = TilemapHelper.buildCollisions(this, this.map);
 
     // Finally, creaTilemapHelperte player. Must be created last since it needs to be rendered above the world
     this.player = new Player(this, 'player', playerSpawnPoint);
@@ -60,7 +59,12 @@ export default class FarmExteriorScene extends BaseScene {
     // configure camera
     this.cameras.main
       .startFollow(this.player.getSprite())
-      .setBounds(0, 0, map.width * GameConfig.map.tileSize.width, map.height * GameConfig.map.tileSize.height);
+      .setBounds(
+        0,
+        0,
+        this.map.width * GameConfig.map.tileSize.width,
+        this.map.height * GameConfig.map.tileSize.height
+      );
 
     // If debug set to true, fill rectangle with debug color
     if (GameConfig.physics.showCollisionObjectsDebug) {

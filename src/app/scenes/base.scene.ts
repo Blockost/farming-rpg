@@ -2,6 +2,8 @@ import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
 import TransitionData from './transitionData';
 import Player from '../objects/player';
+import TilemapHelper from '../utils/tiled/tilemapHelper';
+import SceneKey from './sceneKey';
 
 export default abstract class BaseScene extends Phaser.Scene {
   private customUpdateList: Phaser.GameObjects.GameObject[] = [];
@@ -15,9 +17,19 @@ export default abstract class BaseScene extends Phaser.Scene {
    */
   protected transitionData: TransitionData;
 
-  key: string;
+  /**
+   * Scene tile map.
+   *
+   * This should be assigned in the Scene's create method.
+   */
+  protected map: Phaser.Tilemaps.Tilemap;
 
-  constructor(key: string, config?: Phaser.Types.Scenes.SettingsConfig) {
+  /**
+   * The scene's unique identifier.
+   */
+  key: SceneKey;
+
+  constructor(key: SceneKey, config?: Phaser.Types.Scenes.SettingsConfig) {
     super({ key, ...config });
     this.key = key;
   }
@@ -26,8 +38,8 @@ export default abstract class BaseScene extends Phaser.Scene {
    * Child scenes overridding this method should call it before anything else.
    */
   init(data: TransitionData) {
+    console.log(`Initializing ${this.key}`);
     this.transitionData = data;
-    console.log(this.transitionData);
 
     this.load.addListener('progress', () => {
       const progress = this.load.progress;
@@ -45,6 +57,9 @@ export default abstract class BaseScene extends Phaser.Scene {
     this.events.on(GameEvent.OBJECT_DESTROYED, (object: Phaser.GameObjects.GameObject) => {
       this.customUpdateList.splice(this.customUpdateList.indexOf(object), 1);
     });
+
+    this.events.on(GameEvent.SCENE_SLEEP, this.onSceneSleep.bind(this));
+    this.events.on(GameEvent.SCENE_WAKE, this.onSceneWake.bind(this));
   }
 
   /**
@@ -56,6 +71,7 @@ export default abstract class BaseScene extends Phaser.Scene {
    * Child scenes overridding this method should call it before anything else.
    */
   create() {
+    console.log(`Creating ${this.key}`);
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
@@ -69,5 +85,16 @@ export default abstract class BaseScene extends Phaser.Scene {
    */
   update(time: number, delta: number) {
     this.customUpdateList.forEach((object) => object.update(time, delta));
+  }
+
+  protected onSceneSleep() {
+    console.log(`${this.key} is sleeping...`);
+    this.input.keyboard.resetKeys();
+  }
+
+  protected onSceneWake(systems: Phaser.Scenes.Systems, data: TransitionData) {
+    console.log(`${this.key} is waking up`, data);
+    const spawnPoint = TilemapHelper.getSpawnPoint(this.map, data.targetSpawnPointName);
+    this.player.spawnAt(spawnPoint);
   }
 }

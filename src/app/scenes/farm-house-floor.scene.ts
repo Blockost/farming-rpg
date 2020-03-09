@@ -21,18 +21,18 @@ export default class FarmHouseFloorScene extends BaseScene {
     super.create();
 
     // Create world from tilemap
-    const map = this.make.tilemap({ key: 'map_farm_house_floor' });
-    const interiorTileset = map.addTilesetImage('interior', 'tileset_interior');
-    map.createStaticLayer('player_level_l1', interiorTileset);
-    map.createStaticLayer('player_level_l2', interiorTileset);
-    map.createStaticLayer('player_level_l3', interiorTileset);
+    this.map = this.make.tilemap({ key: 'map_farm_house_floor' });
+    const interiorTileset = this.map.addTilesetImage('interior', 'tileset_interior');
+    this.map.createStaticLayer('player_level_l1', interiorTileset);
+    this.map.createStaticLayer('player_level_l2', interiorTileset);
+    this.map.createStaticLayer('player_level_l3', interiorTileset);
 
     // Retrieve player spawn point
     const spawnPointName = this.transitionData.targetSpawnPointName;
-    const playerSpawnPoint = TilemapHelper.getSpawnPoint(map, spawnPointName);
+    const playerSpawnPoint = TilemapHelper.getSpawnPoint(this.map, spawnPointName);
 
     // Retrieve collision objects from map and add them to world
-    const tiledCollisions = TilemapHelper.buildCollisions(this, map);
+    const tiledCollisions = TilemapHelper.buildCollisions(this, this.map);
 
     // Finally, create player. Must be created last since it needs to be rendered above the world
     this.player = new Player(this, 'player', playerSpawnPoint);
@@ -47,7 +47,7 @@ export default class FarmHouseFloorScene extends BaseScene {
     // configure camera
     this.cameras.main
       .startFollow(this.player.getSprite())
-      .setBounds(0, 0, map.width * GameConfig.map.tileSize.width, map.height * GameConfig.map.tileSize.height)
+      .setBounds(0, 0, this.map.width * GameConfig.map.tileSize.width, this.map.height * GameConfig.map.tileSize.height)
       .setZoom(1.5);
   }
 

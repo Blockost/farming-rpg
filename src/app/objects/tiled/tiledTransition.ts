@@ -47,8 +47,9 @@ export default class TiledTransition extends TiledCollision {
       };
 
       // this.scene.cameras.main.fadeOut(1000, 0, 0, 0, () => console.log('fading out'))
-      // this.scene.scene.pause(this.scene.scene.key);
-      this.scene.scene.start(this.transitionTo, transitionData);
+
+      this.scene.scene.sleep(this.scene.scene.key);
+      this.scene.scene.run(this.transitionTo, transitionData);
 
       // this.scene.scene.transition({
       //   target: this.transitionTo,
