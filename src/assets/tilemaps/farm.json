@@ -221,14 +221,14 @@
                  "name":"",
                  "properties":
                     {
+                     "activateOnFacing":"UP",
                      "targetSpawnPoint":"player_from_farm_exterior",
-                     "transitionFacingStart":"UP",
                      "transitionTo":"FARM_HOUSE_FLOOR"
                     },
                  "propertytypes":
                     {
+                     "activateOnFacing":"string",
                      "targetSpawnPoint":"string",
-                     "transitionFacingStart":"string",
                      "transitionTo":"string"
                     },
                  "rotation":0,

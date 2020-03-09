@@ -9,6 +9,10 @@ enum FacingDirection {
 }
 
 export function parseFacingDirection(direction: string): FacingDirection {
+  if (!direction) {
+    throw new Error('Facing direction cannot be undefined');
+  }
+
   direction = direction.trim().toUpperCase();
   switch (direction) {
     case 'LEFT':

@@ -21,7 +21,7 @@ export default class TiledTransition extends TiledCollision {
   /**
    * The direction the player needs to be facing to in order to trigger the transition.
    */
-  private transitionFacingStart: FacingDirection;
+  private activateOnFacing: FacingDirection;
 
   /**
    * Name of target spawn point where to spawn the player in the target scene.
@@ -31,16 +31,16 @@ export default class TiledTransition extends TiledCollision {
    */
   private targetSpawnPointName: string;
 
-  constructor(scene: Phaser.Scene, tiledObject: Phaser.Types.Tilemaps.TiledObject, targetSpawnPoint: string) {
+  constructor(scene: Phaser.Scene, tiledObject: Phaser.Types.Tilemaps.TiledObject, targetSpawnPointName: string) {
     super(scene, tiledObject);
 
     this.transitionTo = parseSceneKey(tiledObject.properties.transitionTo);
-    this.transitionFacingStart = parseFacingDirection(tiledObject.properties.transitionFacingStart);
-    this.targetSpawnPointName = targetSpawnPoint;
+    this.activateOnFacing = parseFacingDirection(tiledObject.properties.activateOnFacing);
+    this.targetSpawnPointName = targetSpawnPointName;
   }
 
   onCollide(player: Player) {
-    if (player.getFacingDirection() === this.transitionFacingStart) {
+    if (player.getFacingDirection() === this.activateOnFacing) {
       const transitionData: TransitionData = {
         player: player,
         targetSpawnPointName: this.targetSpawnPointName

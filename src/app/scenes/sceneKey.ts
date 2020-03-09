@@ -4,6 +4,10 @@ enum SceneKey {
 }
 
 export function parseSceneKey(key: string) {
+  if (!key) {
+    throw new Error('Scene key cannot be undefined');
+  }
+
   key = key.trim().toUpperCase();
 
   switch (key) {
