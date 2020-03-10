@@ -1,6 +1,7 @@
 enum SceneKey {
   FarmExteriorScene = 'FARM_EXTERIOR',
-  FarmHouseFloorScene = 'FARM_HOUSE_FLOOR'
+  FarmHouseFloorScene = 'FARM_HOUSE_FLOOR',
+  FarmHouseBedroom = 'FARM_HOUSE_BEDROOM'
 }
 
 export function parseSceneKey(key: string) {
@@ -15,6 +16,8 @@ export function parseSceneKey(key: string) {
       return SceneKey.FarmExteriorScene;
     case 'FARM_HOUSE_FLOOR':
       return SceneKey.FarmHouseFloorScene;
+    case 'FARM_HOUSE_BEDROOM':
+      return SceneKey.FarmHouseBedroom;
     default:
       throw new Error(`Unknown scene key ${key}`);
   }

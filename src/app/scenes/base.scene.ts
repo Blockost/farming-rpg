@@ -17,6 +17,8 @@ export default abstract class BaseScene extends Phaser.Scene {
    */
   protected transitionData: TransitionData;
 
+  // TODO: 2020-03-10 Blockost Maybe map should be auto-created in this base scene
+  // and child classes just implement method to build layers and collisions
   /**
    * Scene tile map.
    *
@@ -85,6 +87,7 @@ export default abstract class BaseScene extends Phaser.Scene {
    */
   update(time: number, delta: number) {
     this.customUpdateList.forEach((object) => object.update(time, delta));
+    this.player.update(time, delta, this.cursors);
   }
 
   protected onSceneSleep() {

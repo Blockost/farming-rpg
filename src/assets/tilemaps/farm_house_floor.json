@@ -59,6 +59,26 @@
                  "width":0,
                  "x":319.708550107395,
                  "y":247.557476722373
+                }, 
+                {
+                 "ellipse":true,
+                 "height":0,
+                 "id":23,
+                 "name":"player_from_farm_house_bedroom",
+                 "properties":
+                    {
+                     "facingDirection":"DOWN"
+                    },
+                 "propertytypes":
+                    {
+                     "facingDirection":"string"
+                    },
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":400.352700598465,
+                 "y":128.6981970996
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -85,6 +105,18 @@
                  "height":18.2914771603718,
                  "id":8,
                  "name":"",
+                 "properties":
+                    {
+                     "activateOnFacing":"UP",
+                     "targetSpawnPoint":"player_from_farm_house_floor",
+                     "transitionTo":"FARM_HOUSE_BEDROOM"
+                    },
+                 "propertytypes":
+                    {
+                     "activateOnFacing":"string",
+                     "targetSpawnPoint":"string",
+                     "transitionTo":"string"
+                    },
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -253,7 +285,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":23,
+ "nextobjectid":24,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.0.3",

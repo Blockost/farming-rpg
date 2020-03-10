@@ -1,19 +1,19 @@
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
-import GameConfig from '../utils/gameConfig';
-import Player from '../objects/player';
 import TilemapHelper from '../utils/tiled/tilemapHelper';
+import Player from '../objects/player';
 import TiledCollision from '../objects/tiled/tiledCollision';
+import GameConfig from '../utils/gameConfig';
 
-export default class FarmHouseFloorScene extends BaseScene {
+export default class FarmHouseBedroomScene extends BaseScene {
   constructor() {
-    super(SceneKey.FarmHouseFloorScene);
+    super(SceneKey.FarmHouseBedroom);
   }
 
   preload() {
     super.preload();
 
-    this.load.tilemapTiledJSON('map_farm_house_floor', '/assets/tilemaps/farm_house_floor.json');
+    this.load.tilemapTiledJSON('map_farm_house_bedroom', '/assets/tilemaps/farm_house_bedroom.json');
     this.load.image('tileset_interior', '/assets/spritesheets/tiled/interior.png');
   }
 
@@ -21,11 +21,11 @@ export default class FarmHouseFloorScene extends BaseScene {
     super.create();
 
     // Create world from tilemap
-    this.map = this.make.tilemap({ key: 'map_farm_house_floor' });
+    this.map = this.make.tilemap({ key: 'map_farm_house_bedroom' });
     const interiorTileset = this.map.addTilesetImage('interior', 'tileset_interior');
+    this.map.createStaticLayer('below_player', interiorTileset);
     this.map.createStaticLayer('player_level_l1', interiorTileset);
     this.map.createStaticLayer('player_level_l2', interiorTileset);
-    this.map.createStaticLayer('player_level_l3', interiorTileset);
 
     // Retrieve player spawn point
     const spawnPointName = this.transitionData.targetSpawnPointName;
@@ -48,6 +48,6 @@ export default class FarmHouseFloorScene extends BaseScene {
     this.cameras.main
       .startFollow(this.player.getSprite())
       .setBounds(0, 0, this.map.width * GameConfig.map.tileSize.width, this.map.height * GameConfig.map.tileSize.height)
-      .setZoom(1.5);
+      .setZoom(2);
   }
 }

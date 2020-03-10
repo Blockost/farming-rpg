@@ -72,12 +72,6 @@ export default class FarmExteriorScene extends BaseScene {
     }
   }
 
-  update(time: number, delta: number) {
-    super.update(time, delta);
-
-    this.player.update(time, delta, this.cursors);
-  }
-
   private showCollisionDebug(tiledCollisions: TiledCollision[]) {
     tiledCollisions.forEach((tiledCollision) => tiledCollision.showDebug());
   }
