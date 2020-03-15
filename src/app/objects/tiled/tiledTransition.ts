@@ -27,7 +27,7 @@ export default class TiledTransition extends TiledCollision {
    * Name of target spawn point where to spawn the player in the target scene.
    *
    * This must to be a valid spawn point object in the target map or it will fail
-   * on scene creation.
+   * during map creation.
    */
   private targetSpawnPointName: string;
 

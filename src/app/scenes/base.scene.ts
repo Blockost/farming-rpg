@@ -2,14 +2,27 @@ import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
 import TransitionData from './transitionData';
 import Player from '../objects/player';
-import TilemapHelper from '../utils/tiled/tilemapHelper';
 import SceneKey from './sceneKey';
+import Map from '../utils/map';
 
 export default abstract class BaseScene extends Phaser.Scene {
-  private customUpdateList: Phaser.GameObjects.GameObject[] = [];
+  /**
+   * The key used when loading the json map using `tilemapTiledJSON()`.
+   *
+   * This is mandatory or else the scene won't be able to load its tile map.
+   */
+  public abstract readonly mapKey: string;
 
+  /**
+   * Current player
+   */
   protected player: Player;
+
+  /**
+   * Cursor keys to control player.
+   */
   protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+
   /**
    * Data from the scene it is transitioning from.
    *
@@ -24,7 +37,9 @@ export default abstract class BaseScene extends Phaser.Scene {
    *
    * This should be assigned in the Scene's create method.
    */
-  protected map: Phaser.Tilemaps.Tilemap;
+  protected map: Map;
+
+  private customUpdateList: Phaser.GameObjects.GameObject[] = [];
 
   /**
    * The scene's unique identifier.
@@ -97,7 +112,7 @@ export default abstract class BaseScene extends Phaser.Scene {
 
   protected onSceneWake(systems: Phaser.Scenes.Systems, data: TransitionData) {
     console.log(`${this.key} is waking up`, data);
-    const spawnPoint = TilemapHelper.getSpawnPoint(this.map, data.targetSpawnPointName);
+    const spawnPoint = this.map.getSpawnPoint(data.targetSpawnPointName);
     this.player.spawnAt(spawnPoint);
   }
 }
