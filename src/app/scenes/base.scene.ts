@@ -7,11 +7,16 @@ import Map from '../utils/map';
 
 export default abstract class BaseScene extends Phaser.Scene {
   /**
+   * The scene's unique identifier.
+   */
+  readonly key: SceneKey;
+
+  /**
    * The key used when loading the json map using `tilemapTiledJSON()`.
    *
    * This is mandatory or else the scene won't be able to load its tile map.
    */
-  public abstract readonly mapKey: string;
+  readonly mapKey: string;
 
   /**
    * Current player
@@ -41,14 +46,10 @@ export default abstract class BaseScene extends Phaser.Scene {
 
   private customUpdateList: Phaser.GameObjects.GameObject[] = [];
 
-  /**
-   * The scene's unique identifier.
-   */
-  key: SceneKey;
-
-  constructor(key: SceneKey, config?: Phaser.Types.Scenes.SettingsConfig) {
+  constructor(key: SceneKey, mapKey: string, config?: Phaser.Types.Scenes.SettingsConfig) {
     super({ key, ...config });
     this.key = key;
+    this.mapKey = mapKey;
   }
 
   /**

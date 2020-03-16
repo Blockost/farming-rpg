@@ -4,11 +4,11 @@ import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
 
-export default class FarmExteriorScene extends BaseScene {
-  public readonly mapKey = 'map_farm';
+const MAP_KEY = 'map_farm';
 
+export default class FarmExteriorScene extends BaseScene {
   constructor() {
-    super(SceneKey.FarmExteriorScene);
+    super(SceneKey.FarmExteriorScene, MAP_KEY);
   }
 
   preload() {

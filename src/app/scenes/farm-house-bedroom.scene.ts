@@ -4,11 +4,11 @@ import Player from '../objects/player';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';
 
-export default class FarmHouseBedroomScene extends BaseScene {
-  public readonly mapKey = 'map_farm_house_floor';
+const MAP_KEY = 'map_farm_house_bedroom';
 
+export default class FarmHouseBedroomScene extends BaseScene {
   constructor() {
-    super(SceneKey.FarmHouseBedroom);
+    super(SceneKey.FarmHouseBedroom, MAP_KEY);
   }
 
   preload() {
