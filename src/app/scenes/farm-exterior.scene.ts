@@ -28,16 +28,13 @@ export default class FarmExteriorScene extends BaseScene {
   create() {
     super.create();
 
-    this.map = new Map(this);
+    this.player = new Player(this, 'player');
+
+    this.map = new Map(this, this.player);
 
     // Retrieve player spawn point
     const playerSpawnPoint = this.map.getSpawnPoint('player_start');
-
-    // Finally, creaTilemapHelperte player. Must be created last since it needs to be rendered above the world
-    this.player = new Player(this, 'player', playerSpawnPoint);
-
-    // Add collisions
-    this.map.enablesCollisionWithPlayer(this.player);
+    this.player.spawnAt(playerSpawnPoint);
 
     // configure camera
     this.cameras.main

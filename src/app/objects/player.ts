@@ -24,11 +24,11 @@ export default class Player {
   private textureKey: string;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
 
-  constructor(scene: Phaser.Scene, textureKey: string, spawnPoint: TiledSpawnPoint) {
+  constructor(scene: Phaser.Scene, textureKey: string) {
     this.scene = scene;
     this.textureKey = textureKey;
 
-    this.sprite = this.scene.physics.add.sprite(spawnPoint.x, spawnPoint.y, textureKey);
+    this.sprite = this.scene.physics.add.sprite(200, 200, textureKey);
 
     // Resize player's bounding box and place it at bottom center of the sprite
     this.sprite.body
@@ -39,7 +39,6 @@ export default class Player {
       );
 
     this.registerAnimations();
-    this.facingDirection = spawnPoint.facingDirection;
   }
 
   getSprite(): Phaser.Physics.Arcade.Sprite {
@@ -53,6 +52,10 @@ export default class Player {
   spawnAt(spawnPoint: TiledSpawnPoint) {
     this.sprite.setPosition(spawnPoint.x, spawnPoint.y);
     this.facingDirection = spawnPoint.facingDirection;
+  }
+
+  setDepth(depth: number) {
+    this.sprite.setDepth(depth);
   }
 
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {

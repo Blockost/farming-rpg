@@ -10,19 +10,24 @@ const SPAWN_POINT_LAYER_KEY = 'spawn_points';
 const COLLISIONS_LAYER_KEY = 'collisions';
 const ABOVE_PLAYER_LAYER_KEY = 'above_player';
 
+const PLAYER_DEPTH = 1;
+const ABOVE_PLAYER_LAYER_DEPTH = 100;
+
 /**
  * Wrapper class to work with maps built with Tiled.
  */
 export default class Map {
-  private tilemap: Phaser.Tilemaps.Tilemap;
-  private collisions: TiledCollision[];
+  private readonly mapKey: string;
+  private readonly tilemap: Phaser.Tilemaps.Tilemap;
+  private readonly collisions: TiledCollision[];
 
   /**
    * Constructor.
    *
    * @param scene The scene to attach the tilemap to
+   * @param player the player
    */
-  constructor(private scene: BaseScene) {
+  constructor(private scene: BaseScene, player: Player) {
     // Create tilemap
     this.tilemap = scene.make.tilemap({ key: scene.mapKey });
 
@@ -35,21 +40,22 @@ export default class Map {
     // a way (config) to know which tileset needs to be attached to which layer
     this.tilemap.layers.forEach((layer) => {
       const staticLayer = this.tilemap.createStaticLayer(layer.name, this.tilemap.tilesets);
-      if (staticLayer.name === ABOVE_PLAYER_LAYER_KEY) {
-        staticLayer.setDepth(100);
+
+      // If the map contains a layer called 'above_player', then renders it above everything else
+      if (layer.name === ABOVE_PLAYER_LAYER_KEY) {
+        staticLayer.setDepth(ABOVE_PLAYER_LAYER_DEPTH);
       }
     });
 
-    // If the map contains a layer called 'above_player', then renders it above everything else
-    const abovePlayerLayer = this.tilemap.getLayer(ABOVE_PLAYER_LAYER_KEY);
-    if (abovePlayerLayer) {
-      abovePlayerLayer.tilemapLayer.setDepth(100);
-    }
-
     // Build collisions
     this.collisions = this.buildCollisions(scene, this.tilemap);
+    this.enablesCollisionWithPlayer(player);
+
+    // Render player above the rest of the world (at depth 0 by default)
+    player.setDepth(PLAYER_DEPTH);
 
     // If debug set to true, fill rectangle with debug color
+    // TODO: This does not work actually...
     if (GameConfig.physics.showCollisionObjectsDebug) {
       this.collisions.forEach((tiledCollision) => tiledCollision.showDebug());
     }
@@ -64,14 +70,14 @@ export default class Map {
   }
 
   /**
-   * Retrieves the TiledSpawnPoint in the given tilemap based on the given name.
+   * Retrieves the TiledSpawnPoint based on the given name.
    */
   getSpawnPoint(name: string): TiledSpawnPoint {
     const tiledObjects = this.tilemap.objects.find((objectLayer) => objectLayer.name === SPAWN_POINT_LAYER_KEY).objects;
     const spawnPoint = tiledObjects.find((spawnPoint) => spawnPoint.name === name);
 
     if (!spawnPoint) {
-      throw new Error(`Invalid spawn point name '${name}'`);
+      throw new Error(`Spawn point name '${name}' not found in map '${this.mapKey}'`);
     }
 
     return {
@@ -84,8 +90,11 @@ export default class Map {
 
   /**
    * Enables interactions between Player and collision objects in the map.
+   * 
+   * These interactions are defined inside each collision object and are not the concern of
+   * this method.
    */
-  enablesCollisionWithPlayer(player: Player) {
+  private enablesCollisionWithPlayer(player: Player) {
     this.collisions.forEach((collision) =>
       this.scene.physics.add.collider(player.getSprite(), collision, (obj1, obj2) => {
         (obj2 as TiledCollision).onCollide(player);

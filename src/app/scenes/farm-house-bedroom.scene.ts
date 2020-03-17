@@ -21,19 +21,16 @@ export default class FarmHouseBedroomScene extends BaseScene {
   create() {
     super.create();
 
+    // TODO: How does this work since texture for player has not been loaded in preload() method??
+    this.player = new Player(this, 'player');
+
     // Create world from tilemap
-    this.map = new Map(this);
+    this.map = new Map(this, this.player);
 
     // Retrieve player spawn point
     const spawnPointName = this.transitionData.targetSpawnPointName;
     const playerSpawnPoint = this.map.getSpawnPoint(spawnPointName);
-
-    // Finally, create player. Must be created last since it needs to be rendered above the world
-    // TODO: How does this work since texture for player has not been loaded in preload() method??
-    this.player = new Player(this, 'player', playerSpawnPoint);
-
-    // Add collisions
-    this.map.enablesCollisionWithPlayer(this.player);
+    this.player.spawnAt(playerSpawnPoint);
 
     // configure camera
     this.cameras.main
