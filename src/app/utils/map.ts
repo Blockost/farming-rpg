@@ -54,10 +54,11 @@ export default class Map {
     // Render player above the rest of the world (at depth 0 by default)
     player.setDepth(PLAYER_DEPTH);
 
-    // If debug set to true, fill rectangle with debug color
-    // TODO: This does not work actually...
+    // If debug set to true, create a debug graphics that will fill collision rectangles
+    // with a debug color. Collision objects are declaring there own debug color
     if (GameConfig.physics.showCollisionObjectsDebug) {
-      this.collisions.forEach((tiledCollision) => tiledCollision.showDebug());
+      const graphics = scene.add.graphics();
+      this.collisions.forEach((tiledCollision) => tiledCollision.showDebug(graphics));
     }
   }
 
@@ -90,7 +91,7 @@ export default class Map {
 
   /**
    * Enables interactions between Player and collision objects in the map.
-   * 
+   *
    * These interactions are defined inside each collision object and are not the concern of
    * this method.
    */

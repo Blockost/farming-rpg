@@ -25,7 +25,7 @@ const GameConfig = {
   },
   physics: {
     gravity: 0,
-    showEngineDebug: true,
+    showEngineDebug: false,
     showCollisionObjectsDebug: true
   }
 };

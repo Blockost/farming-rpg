@@ -11,7 +11,6 @@ import SceneKey, { parseSceneKey } from 'src/app/scenes/sceneKey';
  */
 export default class TiledTransition extends TiledCollision {
   protected DEBUG_COLOR = 0x00ff00;
-  protected DEBUG_ALPHA = 0.75;
 
   /**
    * The scene to transition to.

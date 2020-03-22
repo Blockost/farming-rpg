@@ -6,7 +6,7 @@ import Player from '../player';
  */
 export default class TiledCollision extends Phaser.GameObjects.Rectangle {
   protected DEBUG_COLOR = 0xf38630;
-  protected DEBUG_ALPHA = 0.75;
+  protected DEBUG_ALPHA = 0.6;
 
   constructor(scene: Phaser.Scene, tiledObject: Phaser.Types.Tilemaps.TiledObject) {
     super(scene, tiledObject.x, tiledObject.y, tiledObject.width, tiledObject.height);
@@ -27,15 +27,15 @@ export default class TiledCollision extends Phaser.GameObjects.Rectangle {
 
     // Add a static Arcade body to the rectangle. We set the body to static because
     // world collisions are not supposed to move
-    scene.physics.add.existing(this, true) as Phaser.GameObjects.Rectangle;
+    scene.physics.add.existing(this, true);
   }
 
   onCollide(player: Player) {
     // Do nothing
   }
 
-  showDebug(): void {
-    // TODO: 2020-03-01 Blockost Tjis is not working. Find out why
-    this.setFillStyle(this.DEBUG_COLOR, this.DEBUG_ALPHA);
+  showDebug(graphics: Phaser.GameObjects.Graphics) {
+    graphics.setDefaultStyles({ fillStyle: { color: this.DEBUG_COLOR, alpha: this.DEBUG_ALPHA } });
+    graphics.fillRect(this.x, this.y, this.width, this.height);
   }
 }
