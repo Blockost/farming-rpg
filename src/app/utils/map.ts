@@ -12,6 +12,7 @@ const ABOVE_PLAYER_LAYER_KEY = 'above_player';
 
 const PLAYER_DEPTH = 1;
 const ABOVE_PLAYER_LAYER_DEPTH = 100;
+const DEBUG_LAYER_DEPTH = 101;
 
 /**
  * Wrapper class to work with maps built with Tiled.
@@ -57,7 +58,7 @@ export default class Map {
     // If debug set to true, create a debug graphics that will fill collision rectangles
     // with a debug color. Collision objects are declaring there own debug color
     if (GameConfig.physics.showCollisionObjectsDebug) {
-      const graphics = scene.add.graphics();
+      const graphics = scene.add.graphics().setDepth(DEBUG_LAYER_DEPTH);
       this.collisions.forEach((tiledCollision) => tiledCollision.showDebug(graphics));
     }
   }
