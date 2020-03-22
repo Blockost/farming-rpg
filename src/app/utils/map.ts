@@ -97,9 +97,17 @@ export default class Map {
    * this method.
    */
   private enablesCollisionWithPlayer(player: Player) {
+    // TODO: 2020-03-22 Blockost Perf improvement: find a way to check collisions only on
+    // one sprite instead of the entire group
+    const spriteGroup = player.getGroup();
+
     this.collisions.forEach((collision) =>
-      this.scene.physics.add.collider(player.getSprite(), collision, (obj1, obj2) => {
-        (obj2 as TiledCollision).onCollide(player);
+      this.scene.physics.add.collider(spriteGroup, collision, (obj1, obj2) => {
+        // Since all sprites in the player will be colliding at the same time,
+        // we only trigger a true collision if player's body collided with it
+        if ((obj2 as Phaser.Physics.Arcade.Sprite).name === 'body') {
+          (obj1 as TiledCollision).onCollide(player);
+        }
       })
     );
   }

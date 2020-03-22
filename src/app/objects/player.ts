@@ -1,46 +1,74 @@
 import * as Phaser from 'phaser';
-import AnimationHelper from '../utils/animationHelper';
+import AnimationHelper, { ANIMATION_KEYS } from '../utils/animationHelper';
 import FacingDirection from '../utils/facingDirection';
 import GameConfig from '../utils/gameConfig';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
 
 const PLAYER_VELOCITY_X = 140;
 const PLAYER_VELOCITY_Y = 140;
-const ANIMATION_WALK_LEFT = 'WALK_LEFT';
-const ANIMATION_IDLE_LEFT = 'IDLE_LEFT';
-const ANIMATION_WALK_RIGHT = 'WALK_RIGHT';
-const ANIMATION_IDLE_RIGHT = 'IDLE_RIGHT';
-const ANIMATION_WALK_UP = 'WALK_UP';
-const ANIMATION_IDLE_UP = 'IDLE_UP';
-const ANIMATION_WALK_DOWN = 'WALK_DOWN';
-const ANIMATION_IDLE_DOWN = 'IDLE_DOWN';
 
 const PLAYER_BBOX_WIDTH = 20;
 const PLAYER_BBOX_HEIGHT = 10;
 
+interface PhysicalCharacteristicsConfig {
+  hair: string;
+  body: string;
+  chest: string;
+  pants: string;
+  shoes: string;
+}
+
 export default class Player {
   private scene: Phaser.Scene;
-  private sprite: Phaser.Physics.Arcade.Sprite;
-  private textureKey: string;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
-  private physicalCharacteristics: Phaser.Physics.Arcade.Group;
+  private physicsGroup: Phaser.Physics.Arcade.Group;
 
-  constructor(scene: Phaser.Scene, textureKey: string) {
+  constructor(scene: Phaser.Scene, physicalCharacteristicsConfig: PhysicalCharacteristicsConfig) {
     this.scene = scene;
-    this.textureKey = textureKey;
 
-    this.sprite = this.scene.physics.add.sprite(200, 200, textureKey);
+    // Body is created first so that other sprites are automatically rendered on top of it
+    // We give it a name in order to filter out other sprites during collision check
+    const bodySprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.body);
+    bodySprite.name = 'body';
+    const hairSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.hair);
+    const chestSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.chest);
+    const pantsSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.pants);
+    const shoesSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.shoes);
 
-    // Resize player's bounding box and place it at bottom center of the sprite
-    this.sprite.body
-      .setSize(PLAYER_BBOX_WIDTH, PLAYER_BBOX_HEIGHT)
-      .setOffset((GameConfig.sprite.width - PLAYER_BBOX_WIDTH) / 2, GameConfig.sprite.height - PLAYER_BBOX_HEIGHT);
+    // Add all sprites to a group for easy management
+    this.physicsGroup = this.scene.physics.add.group([hairSprite, bodySprite, chestSprite, pantsSprite, shoesSprite]);
 
-    this.registerAnimations();
+    // Resize all the bounding boxes and place them at bottom center of the sprite
+    this.physicsGroup.getChildren().forEach((sprite: Phaser.Physics.Arcade.Sprite) => {
+      sprite.body
+        .setSize(PLAYER_BBOX_WIDTH, PLAYER_BBOX_HEIGHT)
+        .setOffset((GameConfig.sprite.width - PLAYER_BBOX_WIDTH) / 2, GameConfig.sprite.height - PLAYER_BBOX_HEIGHT);
+    });
+
+    // Register all animations
+    AnimationHelper.registerAnimations(this.scene, [
+      physicalCharacteristicsConfig.hair,
+      physicalCharacteristicsConfig.body,
+      physicalCharacteristicsConfig.chest,
+      physicalCharacteristicsConfig.pants,
+      physicalCharacteristicsConfig.shoes
+    ]);
   }
 
+  /**
+   * Returns the first active sprite from player's sprite group.
+   */
   getSprite(): Phaser.Physics.Arcade.Sprite {
-    return this.sprite;
+    // XXX: 2020-03-22 Blockost This is needed for the camera since it can't follow
+    // the entire group (apparently...)
+    return this.physicsGroup.getFirst(true);
+  }
+
+  /**
+   * Returns the whole group of sprites that commposes the player.
+   */
+  getGroup(): Phaser.Physics.Arcade.Group {
+    return this.physicsGroup;
   }
 
   getFacingDirection(): FacingDirection {
@@ -48,12 +76,12 @@ export default class Player {
   }
 
   spawnAt(spawnPoint: TiledSpawnPoint) {
-    this.sprite.setPosition(spawnPoint.x, spawnPoint.y);
+    this.physicsGroup.setXY(spawnPoint.x, spawnPoint.y);
     this.facingDirection = spawnPoint.facingDirection;
   }
 
   setDepth(depth: number) {
-    this.sprite.setDepth(depth);
+    this.physicsGroup.setDepth(depth);
   }
 
   update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
@@ -77,52 +105,52 @@ export default class Player {
 
   private moveLeft() {
     this.applyVelocityX(PLAYER_VELOCITY_X * -1);
-    this.play(ANIMATION_WALK_LEFT, true);
+    this.play(ANIMATION_KEYS.WALK_LEFT, true);
     this.facingDirection = FacingDirection.LEFT;
   }
 
   private moveRight() {
     this.applyVelocityX(PLAYER_VELOCITY_X);
-    this.play(ANIMATION_WALK_RIGHT, true);
+    this.play(ANIMATION_KEYS.WALK_RIGHT, true);
     this.facingDirection = FacingDirection.RIGHT;
   }
 
   private moveUp() {
     this.applyVelocityY(PLAYER_VELOCITY_Y * -1);
-    this.play(ANIMATION_WALK_UP, true);
+    this.play(ANIMATION_KEYS.WALK_UP, true);
     this.facingDirection = FacingDirection.UP;
   }
 
   private moveDown() {
     this.applyVelocityY(PLAYER_VELOCITY_Y);
-    this.play(ANIMATION_WALK_DOWN, true);
+    this.play(ANIMATION_KEYS.WALK_DOWN, true);
     this.facingDirection = FacingDirection.DOWN;
   }
 
   private applyVelocityX(velocity: number) {
-    this.sprite.setVelocityX(velocity);
+    this.physicsGroup.setVelocityX(velocity);
   }
 
   private applyVelocityY(velocity: number) {
-    this.sprite.setVelocityY(velocity);
+    this.physicsGroup.setVelocityY(velocity);
   }
 
   private idle() {
     switch (this.facingDirection) {
       case FacingDirection.LEFT:
-        this.play(ANIMATION_IDLE_LEFT);
+        this.play(ANIMATION_KEYS.IDLE_LEFT);
         break;
 
       case FacingDirection.RIGHT:
-        this.play(ANIMATION_IDLE_RIGHT);
+        this.play(ANIMATION_KEYS.IDLE_RIGHT);
         break;
 
       case FacingDirection.UP:
-        this.play(ANIMATION_IDLE_UP);
+        this.play(ANIMATION_KEYS.IDLE_UP);
         break;
 
       case FacingDirection.DOWN:
-        this.play(ANIMATION_IDLE_DOWN);
+        this.play(ANIMATION_KEYS.IDLE_DOWN);
         break;
 
       default:
@@ -130,86 +158,12 @@ export default class Player {
     }
   }
 
-  private registerAnimations() {
-    // Walk left
-    let [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 9, length: 7, offsetStart: 1 });
-    this.scene.anims.create({
-      key: ANIMATION_WALK_LEFT,
-      frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
-        start: startIndex,
-        end: endIndex
-      }),
-      repeat: -1,
-      frameRate: 10
+  /**
+   * Plays the given animation for all the sprites.
+   */
+  private play(animationName: string, ignoreIfPlaying?: boolean, startFrame?: number) {
+    this.physicsGroup.getChildren().forEach((sprite: Phaser.Physics.Arcade.Sprite) => {
+      sprite.play(AnimationHelper.buildAnimationKey(sprite.texture.key, animationName), ignoreIfPlaying, startFrame);
     });
-
-    // Idle left
-    this.scene.anims.create({
-      key: ANIMATION_IDLE_LEFT,
-      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
-      frameRate: 10
-    });
-
-    // Walk right
-    [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 11, length: 7, offsetStart: 1 });
-    this.scene.anims.create({
-      key: ANIMATION_WALK_RIGHT,
-      frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
-        start: startIndex,
-        end: endIndex
-      }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    // Idle Right
-    this.scene.anims.create({
-      key: ANIMATION_IDLE_RIGHT,
-      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
-      frameRate: 10
-    });
-
-    // Walk up
-    [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 8, length: 7, offsetStart: 1 });
-    this.scene.anims.create({
-      key: ANIMATION_WALK_UP,
-      frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
-        start: startIndex,
-        end: endIndex
-      }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    // Idle left
-    this.scene.anims.create({
-      key: ANIMATION_IDLE_UP,
-      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
-      frameRate: 10
-    });
-
-    // Walk down
-    [startIndex, endIndex] = AnimationHelper.getFrameIndexes({ rowStart: 10, length: 7, offsetStart: 1 });
-    this.scene.anims.create({
-      key: ANIMATION_WALK_DOWN,
-      frames: this.scene.anims.generateFrameNumbers(this.textureKey, {
-        start: startIndex,
-        end: endIndex
-      }),
-      repeat: -1,
-      frameRate: 10
-    });
-
-    // Idle left
-    this.scene.anims.create({
-      key: ANIMATION_IDLE_DOWN,
-      frames: [{ key: this.textureKey, frame: startIndex - 1 }],
-      frameRate: 10
-    });
-  }
-
-  private play(animationkey: string, ignoreIfPlaying?: boolean, startFrame?: number): Phaser.GameObjects.Sprite {
-    // TODO: 2020-02-15 Blockost Play animation of all sprites in groups
-    return this.sprite.play(animationkey, ignoreIfPlaying, startFrame);
   }
 }

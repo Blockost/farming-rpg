@@ -14,7 +14,27 @@ export default class FarmExteriorScene extends BaseScene {
   preload() {
     super.preload();
 
-    this.load.spritesheet('player', '/assets/spritesheets/characters/body/male/light.png', {
+    this.load.spritesheet('body', '/assets/spritesheets/characters/body/male/light.png', {
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
+    });
+
+    this.load.spritesheet('hair', '/assets/spritesheets/characters/hair/male/green.png', {
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
+    });
+
+    this.load.spritesheet('chest', '/assets/spritesheets/characters/chest/male/leather.png', {
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
+    });
+
+    this.load.spritesheet('pants', '/assets/spritesheets/characters/pants/male/white.png', {
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
+    });
+
+    this.load.spritesheet('shoes', '/assets/spritesheets/characters/shoes/male/black.png', {
       frameWidth: GameConfig.sprite.width,
       frameHeight: GameConfig.sprite.height
     });
@@ -28,7 +48,7 @@ export default class FarmExteriorScene extends BaseScene {
   create() {
     super.create();
 
-    this.player = new Player(this, 'player');
+    this.player = new Player(this, { hair: 'hair', body: 'body', chest: 'chest', pants: 'pants', shoes: 'shoes' });
 
     this.map = new Map(this, this.player);
 

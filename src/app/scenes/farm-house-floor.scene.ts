@@ -21,7 +21,7 @@ export default class FarmHouseFloorScene extends BaseScene {
   create() {
     super.create();
 
-    this.player = new Player(this, 'player');
+    this.player = new Player(this, { hair: 'hair', body: 'body', chest: 'chest', pants: 'pants', shoes: 'shoes' });
 
     // Create world from tilemap
     this.map = new Map(this, this.player);

@@ -27,7 +27,10 @@ export default class TiledCollision extends Phaser.GameObjects.Rectangle {
 
     // Add a static Arcade body to the rectangle. We set the body to static because
     // world collisions are not supposed to move
-    scene.physics.add.existing(this, true);
+    const physicsBody = scene.physics.add.existing(this, true);
+    // Also, do not draw physics body when debug mode is on as it is taken care of
+    // by the showDebug() method already
+    (physicsBody.body as Phaser.Physics.Arcade.Body).debugShowBody = false;
   }
 
   onCollide(player: Player) {
