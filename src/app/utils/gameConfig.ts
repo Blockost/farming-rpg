@@ -2,15 +2,11 @@
  * Game configuration.
  */
 const GameConfig = {
-  /**
-   * Size of the canvas in the HTML page
-   */
-  width: 800,
-  height: 640,
-  /**
-   * Size of the maps (levels)
-   */
+  // Size of the canvas in the HTML page (in pixels)
+  width: 1280,
+  height: 720,
   map: {
+    // Size of the tiles used to build maps (in pixels)
     tileSize: {
       width: 32,
       height: 32
