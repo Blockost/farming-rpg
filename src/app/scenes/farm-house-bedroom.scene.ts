@@ -1,6 +1,7 @@
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import Player from '../objects/player';
+import { SkinPalette } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';
 
@@ -22,7 +23,13 @@ export default class FarmHouseBedroomScene extends BaseScene {
     super.create();
 
     // TODO: How does this work since texture for player has not been loaded in preload() method??
-    this.player = new Player(this, { hair: 'hair', body: 'body', chest: 'chest', pants: 'pants', shoes: 'shoes' });
+    this.player = new Player(this, {
+      hair: 'hair',
+      body: SkinPalette.Light,
+      chest: 'chest',
+      pants: 'pants',
+      shoes: 'shoes'
+    });
 
     // Create world from tilemap
     this.map = new Map(this, this.player);

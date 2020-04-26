@@ -1,6 +1,6 @@
 {
-  "name": "angular-phaser-seed",
-  "version": "0.0.0",
+  "name": "farming-rpg",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start:dev": "ng serve",
