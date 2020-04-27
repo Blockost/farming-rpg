@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
 import BaseScene from '../scenes/base.scene';
 import GameConfig from './gameConfig';
-import { Game } from 'phaser';
+
+export enum HairStyle {
+  Bangs = 'bangs',
+  Mohawk = 'mohawk'
+}
 
 export enum SkinPalette {
   Light = 'Light',
@@ -45,45 +48,76 @@ export enum HairPalette {
   WhiteCyan = 'WhiteCyan'
 }
 
-const DEFAULT_SKIN_PALETTE = SkinPalette.Light;
-const DEFAULT_HAIR_PALETTE = HairPalette.Black;
+interface PaletteConfig<T extends SkinPalette | HairPalette> {
+  names: string[];
+  defaultColor: T;
+  colorWidth: number;
+  colorHeight: number;
+  startAt: { x: number; y: number };
+  width: number;
+  height: number;
+}
 
-// Each color in a palette is a 16x16 square
-const PALETTE_COLOR_WIDTH = 16;
-const PALETTE_COLOT_HEIGHT = 16;
+const SKIN_PALETTE_CONFIG: PaletteConfig<SkinPalette> = {
+  names: Object.keys(SkinPalette).filter((name) => isNaN(Number(name))),
+  defaultColor: SkinPalette.Light,
+  colorWidth: 16,
+  colorHeight: 16,
+  startAt: { x: 140, y: 30 },
+  width: 96,
+  height: 176
+};
 
-const SKIN_PALETTE_START_X = 140;
-const SKIN_PALETTE_START_Y = 30;
-const SKIN_PALETTE_WIDTH = 96;
-const SKIN_PALETTE_HEIGHT = 176;
+const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
+  names: Object.keys(HairPalette).filter((name) => isNaN(Number(name))),
+  defaultColor: HairPalette.Black,
+  colorWidth: 16,
+  colorHeight: 16,
+  startAt: { x: 138, y: 29 },
+  width: 96,
+  height: 400
+};
 
-const HAIR_PALETTE_START_X = 138;
-const HAIR_PALETTE_START_Y = 29;
-const HAIR_PALETTE_WIDTH = 96;
-const HAIR_PALETTE_HEIGHT = 400;
-
+/**
+ * Util class to dynamically create spritesheets with color from palettes.
+ *
+ * TODO: 2020-04-27 Blockost This might be turned into a reusable service for dealing with color palettes
+ * and sprites in the future.
+ */
 export default class ColorPaletteUtil {
+  static createSkinPalettes(scene: BaseScene, paletteKey: string, originalSpriteSheetKey: string) {
+    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, originalSpriteSheetKey);
+  }
+
+  static createHairPalettes(scene: BaseScene, paletteKey: string, originalSpriteSheetKey: string) {
+    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, originalSpriteSheetKey);
+  }
+
   /**
    * Create different palette from a base spritesheet.
    */
-  static createPalettes(scene: BaseScene, paletteKey: string, originalSpriteSheetKey: string) {
-    const paletteNames = Object.keys(SkinPalette).filter((name) => isNaN(Number(name)));
-    console.log(paletteNames);
-
-    const numberOfColorInPalette = SKIN_PALETTE_WIDTH / PALETTE_COLOR_WIDTH;
+  static createPalettes<T extends SkinPalette | HairPalette>(
+    scene: BaseScene,
+    paletteKey: string,
+    paletteConfig: PaletteConfig<T>,
+    originalSpriteSheetKey: string
+  ) {
+    const numberOfColorInPalette = paletteConfig.width / paletteConfig.colorWidth;
 
     const colorLookup = new Map<string, Phaser.Display.Color[]>();
 
+    // TODO: Skip spritesheet generation for default palette, since we already have it in assets folder
+
     // For each palette
-    for (let i = 0; i < paletteNames.length; i++) {
-      const currentPaletteName = paletteNames[i];
+    for (let i = 0; i < paletteConfig.names.length; i++) {
+      const currentPaletteName = paletteConfig.names[i];
       console.log(`Retrieving colors for palette '${currentPaletteName}'`);
 
-      const y = SKIN_PALETTE_START_Y + i * PALETTE_COLOT_HEIGHT;
+      const y = paletteConfig.startAt.y + i * paletteConfig.colorHeight;
       const colors: Phaser.Display.Color[] = [];
 
       for (let j = 0; j < numberOfColorInPalette; j++) {
-        const x = SKIN_PALETTE_START_X + j * PALETTE_COLOR_WIDTH;
+        const x = paletteConfig.startAt.x + j * paletteConfig.colorWidth;
 
         const pixel = scene.textures.getPixel(x, y, paletteKey);
         colors.push(pixel);
@@ -91,10 +125,12 @@ export default class ColorPaletteUtil {
       colorLookup.set(currentPaletteName, colors);
     }
 
+    console.log('colorLookup is', colorLookup);
+
     const spriteSheetImage = scene.textures.get(originalSpriteSheetKey).getSourceImage() as HTMLCanvasElement;
 
-    for (let i = 0; i < paletteNames.length; i++) {
-      const currentPaletteName = paletteNames[i];
+    for (let i = 0; i < paletteConfig.names.length; i++) {
+      const currentPaletteName = paletteConfig.names[i];
       console.log(`Creating new spritesheet for palette '${currentPaletteName}'`);
 
       // Create a temporary canvas to write image data onto it
@@ -105,6 +141,7 @@ export default class ColorPaletteUtil {
       );
 
       const context = canvasTexture.getContext();
+      context.imageSmoothingEnabled = false;
       context.drawImage(spriteSheetImage, 0, 0);
       const imageData = context.getImageData(0, 0, spriteSheetImage.width, spriteSheetImage.height);
       const pixelArray = imageData.data;
@@ -128,16 +165,14 @@ export default class ColorPaletteUtil {
         // Iterate through each color in the palette and replace it with the color
         // at the same index in the other palette (pixel swapping)
         for (let i = 0; i < numberOfColorInPalette; i++) {
-          const oldPixelColor = colorLookup.get(DEFAULT_SKIN_PALETTE)[i];
+          const oldPixelColor = colorLookup.get(paletteConfig.defaultColor)[i];
           const newPixelColor = colorLookup.get(currentPaletteName)[i];
-
-          // console.log('oldPixelColor', oldPixelColor);
-          // console.log('newPixelColor', newPixelColor);
-          // console.log('pixel from image', { r, g, b, alpha});
 
           if (r === oldPixelColor.red && g === oldPixelColor.green && b === oldPixelColor.blue) {
             // TODO: 2020-04-26 Blockost Should alpha be 255?
 
+            //console.log('updating pixel here');
+            // return;
             pixelArray[--index] = newPixelColor.blue;
             pixelArray[--index] = newPixelColor.green;
             pixelArray[--index] = newPixelColor.red;

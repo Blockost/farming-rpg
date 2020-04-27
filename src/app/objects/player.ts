@@ -3,7 +3,7 @@ import AnimationHelper, { ANIMATION_KEYS } from '../utils/animationHelper';
 import FacingDirection from '../utils/facingDirection';
 import GameConfig from '../utils/gameConfig';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
-import { SkinPalette } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
 
 const PLAYER_VELOCITY_X = 140;
 const PLAYER_VELOCITY_Y = 140;
@@ -11,12 +11,19 @@ const PLAYER_VELOCITY_Y = 140;
 const PLAYER_BBOX_WIDTH = 20;
 const PLAYER_BBOX_HEIGHT = 10;
 
+// TODO: In a not too distant future, we would probably want to split this config into
+// Equipment (gears) and other body characteristics
 interface PhysicalCharacteristicsConfig {
-  hair: string;
+  hair: HairCharacteristics;
   body: SkinPalette;
   chest: string;
   pants: string;
   shoes: string;
+}
+
+interface HairCharacteristics {
+  style: HairStyle;
+  color: HairPalette;
 }
 
 export default class Player {
@@ -29,9 +36,13 @@ export default class Player {
 
     // Body is created first so that other sprites are automatically rendered on top of it
     // We give it a name in order to filter out other sprites during collision check
-    const bodySprite = this.scene.physics.add.sprite(200, 200, `body-${physicalCharacteristicsConfig.body}`);
+    const bodyTexture = `body-${physicalCharacteristicsConfig.body}`;
+    const bodySprite = this.scene.physics.add.sprite(200, 200, bodyTexture);
     bodySprite.name = 'body';
-    const hairSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.hair);
+
+    const hairTexture = `${physicalCharacteristicsConfig.hair.style}-${physicalCharacteristicsConfig.hair.color}`;
+    const hairSprite = this.scene.physics.add.sprite(200, 200, hairTexture);
+
     const chestSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.chest);
     const pantsSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.pants);
     const shoesSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.shoes);
@@ -48,8 +59,8 @@ export default class Player {
 
     // Register all animations
     AnimationHelper.registerAnimations(this.scene, [
-      physicalCharacteristicsConfig.hair,
-      `body-${physicalCharacteristicsConfig.body}`,
+      hairTexture,
+      bodyTexture,
       physicalCharacteristicsConfig.chest,
       physicalCharacteristicsConfig.pants,
       physicalCharacteristicsConfig.shoes

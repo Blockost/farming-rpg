@@ -1,5 +1,5 @@
 import Player from '../objects/player';
-import ColorPaletteUtil, { SkinPalette } from '../utils/colorPaletteUtil';
+import ColorPaletteUtil, { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
@@ -8,6 +8,7 @@ import Map from '../utils/map';
 const MAP_KEY = 'map_farm';
 
 const SKIN_PALETTE_KEY = 'skin_palette';
+const HAIR_PALETTE_KEY = 'hair_palette';
 
 export default class FarmExteriorScene extends BaseScene {
   constructor() {
@@ -17,12 +18,18 @@ export default class FarmExteriorScene extends BaseScene {
   preload() {
     super.preload();
 
+    // Load body styles
     this.load.spritesheet('body', '/assets/spritesheets/characters/body/male/light.png', {
       frameWidth: GameConfig.sprite.width,
       frameHeight: GameConfig.sprite.height
     });
 
-    this.load.spritesheet('hair', '/assets/spritesheets/characters/hair/male/green.png', {
+    // Loading hairstyles
+    this.load.spritesheet('bangs', '/assets/spritesheets/characters/hair/male/bangs.png', {
+      frameWidth: GameConfig.sprite.width,
+      frameHeight: GameConfig.sprite.height
+    });
+    this.load.spritesheet('mohawk', '/assets/spritesheets/characters/hair/male/mohawk.png', {
       frameWidth: GameConfig.sprite.width,
       frameHeight: GameConfig.sprite.height
     });
@@ -49,6 +56,8 @@ export default class FarmExteriorScene extends BaseScene {
 
     // Skin palette
     this.load.image(SKIN_PALETTE_KEY, '/assets/spritesheets/characters/palettes/skin_palette.png');
+    // Hair palette
+    this.load.image(HAIR_PALETTE_KEY, '/assets/spritesheets/characters/palettes/hair_palette.png');
   }
 
   create() {
@@ -56,13 +65,17 @@ export default class FarmExteriorScene extends BaseScene {
 
     // TODO: 2020-04-26 Blockost Move this outside of the scene. Many of the sprites/textures can be loaded
     // in a "loading" scene since TextureManager is shared between all scenes anyway.
-    // The scene can display progression a a progress bar with funny quotes like 'building world', 'adding people",
+    // The scene can display progression as a progress bar with funny quotes like 'building world', 'adding people",
     // 'growing vegetables', ...
-    ColorPaletteUtil.createPalettes(this, SKIN_PALETTE_KEY, 'body');
+    ColorPaletteUtil.createSkinPalettes(this, SKIN_PALETTE_KEY, 'body');
+    ColorPaletteUtil.createHairPalettes(this, HAIR_PALETTE_KEY, 'mohawk');
 
     this.player = new Player(this, {
-      hair: 'hair',
-      body: SkinPalette.Dark,
+      hair: {
+        style: HairStyle.Mohawk,
+        color: HairPalette.RubyRed
+      },
+      body: SkinPalette.Light,
       chest: 'chest',
       pants: 'pants',
       shoes: 'shoes'

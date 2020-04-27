@@ -2,7 +2,7 @@ import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import GameConfig from '../utils/gameConfig';
 import Player from '../objects/player';
-import { SkinPalette } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
 import Map from '../utils/map';
 
 const MAP_KEY = 'map_farm_house_floor';
@@ -23,7 +23,10 @@ export default class FarmHouseFloorScene extends BaseScene {
     super.create();
 
     this.player = new Player(this, {
-      hair: 'hair',
+      hair: {
+        style: HairStyle.Bangs,
+        color: HairPalette.Blonde
+      },
       body: SkinPalette.Albino,
       chest: 'chest',
       pants: 'pants',

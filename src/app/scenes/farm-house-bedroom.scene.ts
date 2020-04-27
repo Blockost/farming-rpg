@@ -1,7 +1,7 @@
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import Player from '../objects/player';
-import { SkinPalette } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';
 
@@ -24,7 +24,10 @@ export default class FarmHouseBedroomScene extends BaseScene {
 
     // TODO: How does this work since texture for player has not been loaded in preload() method??
     this.player = new Player(this, {
-      hair: 'hair',
+      hair: {
+        style: HairStyle.Bangs,
+        color: HairPalette.Blonde
+      },
       body: SkinPalette.Light,
       chest: 'chest',
       pants: 'pants',
