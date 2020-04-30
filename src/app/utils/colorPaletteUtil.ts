@@ -125,8 +125,6 @@ export default class ColorPaletteUtil {
       colorLookup.set(currentPaletteName, colors);
     }
 
-    console.log('colorLookup is', colorLookup);
-
     const spriteSheetImage = scene.textures.get(originalSpriteSheetKey).getSourceImage() as HTMLCanvasElement;
 
     for (let i = 0; i < paletteConfig.names.length; i++) {
@@ -134,8 +132,9 @@ export default class ColorPaletteUtil {
       console.log(`Creating new spritesheet for palette '${currentPaletteName}'`);
 
       // Create a temporary canvas to write image data onto it
+      const tempTextureName = `${originalSpriteSheetKey}-temp-${currentPaletteName}`;
       const canvasTexture = scene.textures.createCanvas(
-        `${originalSpriteSheetKey}-temp-${currentPaletteName}`,
+        tempTextureName,
         spriteSheetImage.width,
         spriteSheetImage.height
       );
@@ -145,8 +144,6 @@ export default class ColorPaletteUtil {
       context.drawImage(spriteSheetImage, 0, 0);
       const imageData = context.getImageData(0, 0, spriteSheetImage.width, spriteSheetImage.height);
       const pixelArray = imageData.data;
-
-      // console.log(pixelArray);
 
       // Iterate over each pixels of the canvas image
       for (let p = 0; p < pixelArray.length / 4; p++) {
@@ -171,11 +168,12 @@ export default class ColorPaletteUtil {
           if (r === oldPixelColor.red && g === oldPixelColor.green && b === oldPixelColor.blue) {
             // TODO: 2020-04-26 Blockost Should alpha be 255?
 
-            //console.log('updating pixel here');
-            // return;
             pixelArray[--index] = newPixelColor.blue;
             pixelArray[--index] = newPixelColor.green;
             pixelArray[--index] = newPixelColor.red;
+
+            // XXX: 2020-04-30 /!\ Nasty bug: Skip other color in palette since we already found a match!
+            break;
           }
         }
       }
@@ -190,7 +188,12 @@ export default class ColorPaletteUtil {
         frameHeight: GameConfig.sprite.height
       });
 
-      // TODO: 2020-04-26 Blockost Temporary textures/images should be cleaned up here!
+      // Destroy temporary canvas
+      scene.textures.get(tempTextureName).destroy();
     }
+
+    // Destroy palette and original spritesheet
+    scene.textures.get(paletteKey).destroy();
+    scene.textures.get(originalSpriteSheetKey).destroy();
   }
 }

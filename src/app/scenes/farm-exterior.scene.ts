@@ -67,13 +67,13 @@ export default class FarmExteriorScene extends BaseScene {
     // in a "loading" scene since TextureManager is shared between all scenes anyway.
     // The scene can display progression as a progress bar with funny quotes like 'building world', 'adding people",
     // 'growing vegetables', ...
+    ColorPaletteUtil.createHairPalettes(this, HAIR_PALETTE_KEY, 'bangs');
     ColorPaletteUtil.createSkinPalettes(this, SKIN_PALETTE_KEY, 'body');
-    ColorPaletteUtil.createHairPalettes(this, HAIR_PALETTE_KEY, 'mohawk');
 
     this.player = new Player(this, {
       hair: {
-        style: HairStyle.Mohawk,
-        color: HairPalette.RubyRed
+        style: HairStyle.Bangs,
+        color: HairPalette.Green
       },
       body: SkinPalette.Light,
       chest: 'chest',
