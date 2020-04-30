@@ -25,7 +25,7 @@ export default class FarmHouseFloorScene extends BaseScene {
     this.player = new Player(this, {
       hair: {
         style: HairStyle.Bangs,
-        color: HairPalette.Blonde
+        color: HairPalette.WhiteCyan
       },
       body: SkinPalette.Albino,
       chest: 'chest',
