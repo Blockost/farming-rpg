@@ -64,6 +64,8 @@ export default class FarmExteriorScene extends BaseScene {
     this.load.image(SKIN_PALETTE_KEY, '/assets/spritesheets/characters/palettes/skin_palette.png');
     // Hair palette
     this.load.image(HAIR_PALETTE_KEY, '/assets/spritesheets/characters/palettes/hair_palette.png');
+
+    this.load.image('character_shadow', '/assets/sprites/misc/character_shadow.png');
   }
 
   create() {

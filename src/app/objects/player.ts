@@ -46,6 +46,10 @@ export default class Player {
     this.data = config;
     const physicalCharacteristics = config.physicalCharacteristicsConfig;
 
+    // Shadow
+    const shadowSprite = this.scene.physics.add.sprite(200, 200, 'character_shadow');
+    shadowSprite.name = 'shadow';
+
     // Body is created first so that other sprites are automatically rendered on top of it
     // We give it a name in order to filter out other sprites during collision check
     const bodyTexture = `${physicalCharacteristics.body.gender}-${physicalCharacteristics.body.skin}`;
@@ -60,13 +64,20 @@ export default class Player {
     const shoesSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristics.shoes);
 
     // Add all sprites to a group for easy management
-    this.physicsGroup = this.scene.physics.add.group([hairSprite, bodySprite, chestSprite, pantsSprite, shoesSprite]);
+    this.physicsGroup = this.scene.physics.add.group([
+      hairSprite,
+      bodySprite,
+      chestSprite,
+      pantsSprite,
+      shoesSprite,
+      shadowSprite
+    ]);
 
     // Resize all the bounding boxes and place them at bottom center of the sprite
     this.physicsGroup.getChildren().forEach((sprite: Phaser.Physics.Arcade.Sprite) => {
       sprite.body
         .setSize(PLAYER_BBOX_WIDTH, PLAYER_BBOX_HEIGHT)
-        .setOffset((GameConfig.sprite.width - PLAYER_BBOX_WIDTH) / 2, GameConfig.sprite.height - PLAYER_BBOX_HEIGHT);
+        .setOffset((sprite.width - PLAYER_BBOX_WIDTH) / 2, sprite.height - PLAYER_BBOX_HEIGHT);
     });
 
     // Register all animations if necessary (animations are global)
@@ -110,6 +121,13 @@ export default class Player {
 
   spawnAt(spawnPoint: TiledSpawnPoint) {
     this.physicsGroup.setXY(spawnPoint.x, spawnPoint.y);
+
+    // Make sure shadow is at the character's feet
+    const shadowSprite = this.physicsGroup
+      .getChildren()
+      .find((sprite) => sprite.name === 'shadow') as Phaser.Physics.Arcade.Sprite;
+    shadowSprite.setPosition(spawnPoint.x, spawnPoint.y + GameConfig.sprite.height / 2 - shadowSprite.height / 2);
+
     this.facingDirection = spawnPoint.facingDirection;
   }
 
