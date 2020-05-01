@@ -3,7 +3,7 @@ import AnimationHelper, { ANIMATION_KEYS } from '../utils/animationHelper';
 import FacingDirection from '../utils/facingDirection';
 import GameConfig from '../utils/gameConfig';
 import TiledSpawnPoint from './tiled/tiledSpawnPoint';
-import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle, Gender } from '../utils/colorPaletteUtil';
 
 const PLAYER_VELOCITY_X = 140;
 const PLAYER_VELOCITY_Y = 140;
@@ -15,7 +15,7 @@ const PLAYER_BBOX_HEIGHT = 10;
 // Equipment (gears) and other body characteristics
 interface PhysicalCharacteristicsConfig {
   hair: HairCharacteristics;
-  body: SkinPalette;
+  body: BodyCharacteristics;
   chest: string;
   pants: string;
   shoes: string;
@@ -24,6 +24,11 @@ interface PhysicalCharacteristicsConfig {
 interface HairCharacteristics {
   style: HairStyle;
   color: HairPalette;
+}
+
+interface BodyCharacteristics {
+  gender: Gender;
+  skin: SkinPalette;
 }
 
 export default class Player {
@@ -36,7 +41,7 @@ export default class Player {
 
     // Body is created first so that other sprites are automatically rendered on top of it
     // We give it a name in order to filter out other sprites during collision check
-    const bodyTexture = `body-${physicalCharacteristicsConfig.body}`;
+    const bodyTexture = `${physicalCharacteristicsConfig.body.gender}-${physicalCharacteristicsConfig.body.skin}`;
     const bodySprite = this.scene.physics.add.sprite(200, 200, bodyTexture);
     bodySprite.name = 'body';
 

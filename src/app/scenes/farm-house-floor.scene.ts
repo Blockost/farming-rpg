@@ -2,7 +2,7 @@ import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import GameConfig from '../utils/gameConfig';
 import Player from '../objects/player';
-import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle, Gender } from '../utils/colorPaletteUtil';
 import Map from '../utils/map';
 
 const MAP_KEY = 'map_farm_house_floor';
@@ -27,7 +27,10 @@ export default class FarmHouseFloorScene extends BaseScene {
         style: HairStyle.Bangs,
         color: HairPalette.WhiteCyan
       },
-      body: SkinPalette.Albino,
+      body: {
+        gender: Gender.Male,
+        skin: SkinPalette.Albino
+      },
       chest: 'chest',
       pants: 'pants',
       shoes: 'shoes'

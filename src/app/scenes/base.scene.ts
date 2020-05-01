@@ -56,7 +56,7 @@ export default abstract class BaseScene extends Phaser.Scene {
    * Child scenes overridding this method should call it before anything else.
    */
   init(data: TransitionData) {
-    console.log(`Initializing ${this.key}`);
+    console.log(`Initializing ${this.key} with transition data: `, data);
     this.transitionData = data;
 
     this.load.addListener('progress', () => {

@@ -1,51 +1,67 @@
 import BaseScene from '../scenes/base.scene';
 import GameConfig from './gameConfig';
 
+export const extractNamesFromEnum = (enumarated: any) => {
+  return Object.keys(enumarated)
+    .filter((name) => isNaN(Number(name)))
+    .map((name) => name.toLowerCase());
+};
+
 export enum HairStyle {
   Bangs = 'bangs',
-  Mohawk = 'mohawk'
+  Loose = 'loose',
+  Mohawk = 'mohawk',
+  Messy1 = 'messy1',
+  Messy2 = 'messy2',
+  Xlongknot = 'xlongknot'
 }
 
 export enum SkinPalette {
-  Light = 'Light',
-  Tanned = 'Tanned',
-  Tanned2 = 'Tanned2',
-  Dark = 'Dark',
-  Dark2 = 'Dark2',
-  DarkElf = 'DarkElf',
-  DarkElf2 = 'DarkElf2',
-  Albino = 'Albino',
-  Albino2 = 'Albino2',
-  Orc = 'Orc',
-  RedOrc = 'RedOrc'
+  Light = 'light',
+  Tanned = 'tanned',
+  Tanned2 = 'tanned2',
+  Dark = 'dark',
+  Dark2 = 'dark2',
+  DarkElf = 'darkelf',
+  DarkElf2 = 'darkelf2',
+  Albino = 'albino',
+  Albino2 = 'albino2',
+  Orc = 'orc',
+  RedOrc = 'redorc'
 }
 
 export enum HairPalette {
-  Default = 'Default',
-  Black = 'Black',
-  Blonde = 'Blonde',
-  Blonde2 = 'Blonde2',
-  Blue = 'Blue',
-  Blue2 = 'Blue2',
-  Brown = 'Brown',
-  Brunette = 'Brunette',
-  Brunette2 = 'Brunette2',
-  DarkBlonde = 'DarkBlonde',
-  Gray = 'Gray',
-  Green = 'Green',
-  Green2 = 'Green2',
-  LightBlonde = 'LightBlonde',
-  LightBlonde2 = 'LightBlonde2',
-  Pink = 'Pink',
-  Pink2 = 'Pink2',
-  Raven = 'Raven',
-  Raven2 = 'Raven2',
-  Redhead = 'Redhead',
-  RubyRed = 'RubyRed',
-  White = 'White',
-  WhiteBlonde = 'WhiteBlonde',
-  WhiteBlonde2 = 'WhiteBlonde2',
-  WhiteCyan = 'WhiteCyan'
+  Default = 'default',
+  Black = 'black',
+  Blonde = 'blonde',
+  Blonde2 = 'blonde2',
+  Blue = 'blue',
+  Blue2 = 'blue2',
+  Brown = 'brown',
+  Brunette = 'brunette',
+  Brunette2 = 'brunette2',
+  DarkBlonde = 'darkblonde',
+  Gray = 'gray',
+  Green = 'green',
+  Green2 = 'green2',
+  LightBlonde = 'lightblonde',
+  LightBlonde2 = 'lightblonde2',
+  Pink = 'pink',
+  Pink2 = 'pink2',
+  Raven = 'raven',
+  Raven2 = 'raven2',
+  Redhead = 'redhead',
+  RubyRed = 'rubyred',
+  White = 'white',
+  WhiteBlonde = 'whiteblonde',
+  WhiteBlonde2 = 'whiteblonde2',
+  WhiteCyan = 'whitecyan'
+}
+
+export enum Gender {
+  Male = 'male',
+  Female = 'female',
+  Skeleton = 'skeleton'
 }
 
 interface PaletteConfig<T extends SkinPalette | HairPalette> {
@@ -59,7 +75,7 @@ interface PaletteConfig<T extends SkinPalette | HairPalette> {
 }
 
 const SKIN_PALETTE_CONFIG: PaletteConfig<SkinPalette> = {
-  names: Object.keys(SkinPalette).filter((name) => isNaN(Number(name))),
+  names: extractNamesFromEnum(SkinPalette),
   defaultColor: SkinPalette.Light,
   colorWidth: 16,
   colorHeight: 16,
@@ -69,7 +85,7 @@ const SKIN_PALETTE_CONFIG: PaletteConfig<SkinPalette> = {
 };
 
 const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
-  names: Object.keys(HairPalette).filter((name) => isNaN(Number(name))),
+  names: extractNamesFromEnum(HairPalette),
   defaultColor: HairPalette.Black,
   colorWidth: 16,
   colorHeight: 16,
@@ -85,12 +101,13 @@ const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
  * and sprites in the future.
  */
 export default class ColorPaletteUtil {
-  static createSkinPalettes(scene: BaseScene, paletteKey: string, originalSpriteSheetKey: string) {
-    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, originalSpriteSheetKey);
+  static createSkinTextures(scene: BaseScene, paletteKey: string, baseSkinTexture: string) {
+    // TODO: Support different gender
+    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, baseSkinTexture);
   }
 
-  static createHairPalettes(scene: BaseScene, paletteKey: string, originalSpriteSheetKey: string) {
-    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, originalSpriteSheetKey);
+  static createHairTextures(scene: BaseScene, paletteKey: string, baseHairTexture: HairStyle) {
+    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, baseHairTexture);
   }
 
   /**
@@ -100,15 +117,13 @@ export default class ColorPaletteUtil {
     scene: BaseScene,
     paletteKey: string,
     paletteConfig: PaletteConfig<T>,
-    originalSpriteSheetKey: string
+    baseTexture: string
   ) {
     const numberOfColorInPalette = paletteConfig.width / paletteConfig.colorWidth;
 
     const colorLookup = new Map<string, Phaser.Display.Color[]>();
 
-    // TODO: Skip spritesheet generation for default palette, since we already have it in assets folder
-
-    // For each palette
+    // Create a map for colors
     for (let i = 0; i < paletteConfig.names.length; i++) {
       const currentPaletteName = paletteConfig.names[i];
       console.log(`Retrieving colors for palette '${currentPaletteName}'`);
@@ -125,24 +140,20 @@ export default class ColorPaletteUtil {
       colorLookup.set(currentPaletteName, colors);
     }
 
-    const spriteSheetImage = scene.textures.get(originalSpriteSheetKey).getSourceImage() as HTMLCanvasElement;
+    const baseImage = scene.textures.get(baseTexture).getSourceImage() as HTMLCanvasElement;
 
     for (let i = 0; i < paletteConfig.names.length; i++) {
       const currentPaletteName = paletteConfig.names[i];
       console.log(`Creating new spritesheet for palette '${currentPaletteName}'`);
 
       // Create a temporary canvas to write image data onto it
-      const tempTextureName = `${originalSpriteSheetKey}-temp-${currentPaletteName}`;
-      const canvasTexture = scene.textures.createCanvas(
-        tempTextureName,
-        spriteSheetImage.width,
-        spriteSheetImage.height
-      );
+      const tempTextureName = `${baseTexture}-temp-${currentPaletteName}`;
+      const canvasTexture = scene.textures.createCanvas(tempTextureName, baseImage.width, baseImage.height);
 
       const context = canvasTexture.getContext();
       context.imageSmoothingEnabled = false;
-      context.drawImage(spriteSheetImage, 0, 0);
-      const imageData = context.getImageData(0, 0, spriteSheetImage.width, spriteSheetImage.height);
+      context.drawImage(baseImage, 0, 0);
+      const imageData = context.getImageData(0, 0, baseImage.width, baseImage.height);
       const pixelArray = imageData.data;
 
       // Iterate over each pixels of the canvas image
@@ -181,7 +192,7 @@ export default class ColorPaletteUtil {
       // Put the new image (with the pixels taken from the new palette) into the canvas
       context.putImageData(imageData, 0, 0);
 
-      const spriteSheetFromPalette = `${originalSpriteSheetKey}-${currentPaletteName}`;
+      const spriteSheetFromPalette = `${baseTexture}-${currentPaletteName}`;
       console.log(`Adding '${spriteSheetFromPalette}' to TextureManager`);
       scene.textures.addSpriteSheet(spriteSheetFromPalette, canvasTexture.getSourceImage() as HTMLImageElement, {
         frameWidth: GameConfig.sprite.width,
@@ -194,6 +205,6 @@ export default class ColorPaletteUtil {
 
     // Destroy palette and original spritesheet
     scene.textures.get(paletteKey).destroy();
-    scene.textures.get(originalSpriteSheetKey).destroy();
+    scene.textures.get(baseTexture).destroy();
   }
 }

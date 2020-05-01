@@ -1,5 +1,11 @@
 import Player from '../objects/player';
-import ColorPaletteUtil, { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
+import ColorPaletteUtil, {
+  SkinPalette,
+  HairPalette,
+  HairStyle,
+  Gender,
+  extractNamesFromEnum
+} from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
@@ -18,21 +24,21 @@ export default class FarmExteriorScene extends BaseScene {
   preload() {
     super.preload();
 
-    // Load body styles
-    this.load.spritesheet('body', '/assets/spritesheets/characters/body/male/light.png', {
+    // TODO: Support different gender
+    // Loading skin styles
+    this.load.spritesheet(Gender.Male, '/assets/spritesheets/characters/body/male/light.png', {
       frameWidth: GameConfig.sprite.width,
       frameHeight: GameConfig.sprite.height
     });
 
-    // Loading hairstyles
-    this.load.spritesheet('bangs', '/assets/spritesheets/characters/hair/male/bangs.png', {
-      frameWidth: GameConfig.sprite.width,
-      frameHeight: GameConfig.sprite.height
-    });
-    this.load.spritesheet('mohawk', '/assets/spritesheets/characters/hair/male/mohawk.png', {
-      frameWidth: GameConfig.sprite.width,
-      frameHeight: GameConfig.sprite.height
-    });
+    // Loading hair styles
+    // TODO: Think about deleting those textures if not needed (player + npc may not use every hair style possible)
+    extractNamesFromEnum(HairStyle).forEach((name) =>
+      this.load.spritesheet(name, `/assets/spritesheets/characters/hair/male/${name}.png`, {
+        frameWidth: GameConfig.sprite.width,
+        frameHeight: GameConfig.sprite.height
+      })
+    );
 
     this.load.spritesheet('chest', '/assets/spritesheets/characters/chest/male/leather.png', {
       frameWidth: GameConfig.sprite.width,
@@ -67,15 +73,18 @@ export default class FarmExteriorScene extends BaseScene {
     // in a "loading" scene since TextureManager is shared between all scenes anyway.
     // The scene can display progression as a progress bar with funny quotes like 'building world', 'adding people",
     // 'growing vegetables', ...
-    ColorPaletteUtil.createHairPalettes(this, HAIR_PALETTE_KEY, 'bangs');
-    ColorPaletteUtil.createSkinPalettes(this, SKIN_PALETTE_KEY, 'body');
+    ColorPaletteUtil.createHairTextures(this, HAIR_PALETTE_KEY, HairStyle.Xlongknot);
+    ColorPaletteUtil.createSkinTextures(this, SKIN_PALETTE_KEY, Gender.Male);
 
     this.player = new Player(this, {
       hair: {
-        style: HairStyle.Bangs,
+        style: HairStyle.Xlongknot,
         color: HairPalette.Green
       },
-      body: SkinPalette.Light,
+      body: {
+        gender: Gender.Male,
+        skin: SkinPalette.Light
+      },
       chest: 'chest',
       pants: 'pants',
       shoes: 'shoes'

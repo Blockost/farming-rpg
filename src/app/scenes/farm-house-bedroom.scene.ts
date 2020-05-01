@@ -1,9 +1,10 @@
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import Player from '../objects/player';
-import { SkinPalette, HairPalette, HairStyle } from '../utils/colorPaletteUtil';
+import { SkinPalette, HairPalette, HairStyle, Gender } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';
+import { getLocaleWeekEndRange } from '@angular/common';
 
 const MAP_KEY = 'map_farm_house_bedroom';
 
@@ -22,13 +23,15 @@ export default class FarmHouseBedroomScene extends BaseScene {
   create() {
     super.create();
 
-    // TODO: How does this work since texture for player has not been loaded in preload() method??
     this.player = new Player(this, {
       hair: {
         style: HairStyle.Bangs,
         color: HairPalette.Redhead
       },
-      body: SkinPalette.Light,
+      body: {
+        gender: Gender.Male,
+        skin: SkinPalette.Light
+      },
       chest: 'chest',
       pants: 'pants',
       shoes: 'shoes'
