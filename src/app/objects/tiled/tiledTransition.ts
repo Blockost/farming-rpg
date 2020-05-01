@@ -41,7 +41,7 @@ export default class TiledTransition extends TiledCollision {
   onCollide(player: Player) {
     if (player.getFacingDirection() === this.activateOnFacing) {
       const transitionData: TransitionData = {
-        player: player,
+        playerData: player.getData(),
         targetSpawnPointName: this.targetSpawnPointName
       };
 

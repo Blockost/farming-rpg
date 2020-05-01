@@ -13,6 +13,9 @@ export const ANIMATION_KEYS = {
 
 /**
  * Helper class to work with Phaser animations from spritesheets.
+ *
+ * Note: Animations are global in Phaser and does not need to be re-registered for each scene,
+ * unless sprites have changed.
  */
 export default class AnimationHelper {
   static registerAnimations(scene: Phaser.Scene, textureKeys: string[]) {

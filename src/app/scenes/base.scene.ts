@@ -1,9 +1,11 @@
 import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
 import TransitionData from './transitionData';
-import Player from '../objects/player';
+import Player, { PlayerData } from '../objects/player';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
+
+const LOCAL_STORAGE_PLAYER_DATA_KEY = 'PLAYER_DATA';
 
 export default abstract class BaseScene extends Phaser.Scene {
   /**
@@ -54,6 +56,9 @@ export default abstract class BaseScene extends Phaser.Scene {
 
   /**
    * Child scenes overridding this method should call it before anything else.
+   *
+   * @param data Data from the scene it is transitioning from. Note that this resolves to an
+   * empty object {} for the first scene started.
    */
   init(data: TransitionData) {
     console.log(`Initializing ${this.key} with transition data: `, data);
@@ -91,6 +96,10 @@ export default abstract class BaseScene extends Phaser.Scene {
   create() {
     console.log(`Creating ${this.key}`);
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    if (this.transitionData.playerData) {
+      this.player = this.buildPlayerFromData(this.transitionData.playerData);
+    }
   }
 
   /**
@@ -108,12 +117,33 @@ export default abstract class BaseScene extends Phaser.Scene {
 
   protected onSceneSleep() {
     console.log(`${this.key} is sleeping...`);
+    // destroy player before sleeping since it will be re-created when scene wake up
+    this.player.getGroup().destroy(true);
     this.input.keyboard.resetKeys();
   }
 
   protected onSceneWake(systems: Phaser.Scenes.Systems, data: TransitionData) {
     console.log(`${this.key} is waking up`, data);
     const spawnPoint = this.map.getSpawnPoint(data.targetSpawnPointName);
+
+    this.player = this.buildPlayerFromData(data.playerData);
+    this.map.updatePlayer(this.player);
     this.player.spawnAt(spawnPoint);
+  }
+
+  private buildPlayerFromData(playerData: PlayerData): Player {
+    console.log('Building player from data');
+
+    if (!playerData) {
+      throw new Error('No player data passed to scene');
+    }
+
+    return new Player(this, playerData);
+  }
+
+  private dumpPlayerData() {
+    const playerData = this.player.getData();
+    console.log('Saving player data in localStorage', playerData);
+    localStorage.setItem(LOCAL_STORAGE_PLAYER_DATA_KEY, JSON.stringify(playerData));
   }
 }

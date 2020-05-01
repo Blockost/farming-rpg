@@ -1,4 +1,4 @@
-import Player from '../objects/player';
+import Player, { PlayerData } from '../objects/player';
 import ColorPaletteUtil, {
   SkinPalette,
   HairPalette,
@@ -76,20 +76,25 @@ export default class FarmExteriorScene extends BaseScene {
     ColorPaletteUtil.createHairTextures(this, HAIR_PALETTE_KEY, HairStyle.Xlongknot);
     ColorPaletteUtil.createSkinTextures(this, SKIN_PALETTE_KEY, Gender.Male);
 
-    this.player = new Player(this, {
-      hair: {
-        style: HairStyle.Xlongknot,
-        color: HairPalette.Green
-      },
-      body: {
-        gender: Gender.Male,
-        skin: SkinPalette.Light
-      },
-      chest: 'chest',
-      pants: 'pants',
-      shoes: 'shoes'
-    });
+    // TODO: This should be created by another scene that handles player customization
+    // at the start of the game
+    const playerData: PlayerData = {
+      physicalCharacteristicsConfig: {
+        hair: {
+          style: HairStyle.Xlongknot,
+          color: HairPalette.Green
+        },
+        body: {
+          gender: Gender.Male,
+          skin: SkinPalette.Light
+        },
+        chest: 'chest',
+        pants: 'pants',
+        shoes: 'shoes'
+      }
+    };
 
+    this.player = new Player(this, playerData, true);
     this.map = new Map(this, this.player);
 
     // Retrieve player spawn point

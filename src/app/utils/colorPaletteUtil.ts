@@ -126,7 +126,6 @@ export default class ColorPaletteUtil {
     // Create a map for colors
     for (let i = 0; i < paletteConfig.names.length; i++) {
       const currentPaletteName = paletteConfig.names[i];
-      console.log(`Retrieving colors for palette '${currentPaletteName}'`);
 
       const y = paletteConfig.startAt.y + i * paletteConfig.colorHeight;
       const colors: Phaser.Display.Color[] = [];
@@ -144,7 +143,6 @@ export default class ColorPaletteUtil {
 
     for (let i = 0; i < paletteConfig.names.length; i++) {
       const currentPaletteName = paletteConfig.names[i];
-      console.log(`Creating new spritesheet for palette '${currentPaletteName}'`);
 
       // Create a temporary canvas to write image data onto it
       const tempTextureName = `${baseTexture}-temp-${currentPaletteName}`;

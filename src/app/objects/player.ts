@@ -11,6 +11,10 @@ const PLAYER_VELOCITY_Y = 140;
 const PLAYER_BBOX_WIDTH = 20;
 const PLAYER_BBOX_HEIGHT = 10;
 
+export interface PlayerData {
+  physicalCharacteristicsConfig: PhysicalCharacteristicsConfig;
+}
+
 // TODO: In a not too distant future, we would probably want to split this config into
 // Equipment (gears) and other body characteristics
 interface PhysicalCharacteristicsConfig {
@@ -33,24 +37,27 @@ interface BodyCharacteristics {
 
 export default class Player {
   private scene: Phaser.Scene;
+  private data: PlayerData;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
   private physicsGroup: Phaser.Physics.Arcade.Group;
 
-  constructor(scene: Phaser.Scene, physicalCharacteristicsConfig: PhysicalCharacteristicsConfig) {
+  constructor(scene: Phaser.Scene, config: PlayerData, registerAnimations = false) {
     this.scene = scene;
+    this.data = config;
+    const physicalCharacteristics = config.physicalCharacteristicsConfig;
 
     // Body is created first so that other sprites are automatically rendered on top of it
     // We give it a name in order to filter out other sprites during collision check
-    const bodyTexture = `${physicalCharacteristicsConfig.body.gender}-${physicalCharacteristicsConfig.body.skin}`;
+    const bodyTexture = `${physicalCharacteristics.body.gender}-${physicalCharacteristics.body.skin}`;
     const bodySprite = this.scene.physics.add.sprite(200, 200, bodyTexture);
     bodySprite.name = 'body';
 
-    const hairTexture = `${physicalCharacteristicsConfig.hair.style}-${physicalCharacteristicsConfig.hair.color}`;
+    const hairTexture = `${physicalCharacteristics.hair.style}-${physicalCharacteristics.hair.color}`;
     const hairSprite = this.scene.physics.add.sprite(200, 200, hairTexture);
 
-    const chestSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.chest);
-    const pantsSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.pants);
-    const shoesSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristicsConfig.shoes);
+    const chestSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristics.chest);
+    const pantsSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristics.pants);
+    const shoesSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristics.shoes);
 
     // Add all sprites to a group for easy management
     this.physicsGroup = this.scene.physics.add.group([hairSprite, bodySprite, chestSprite, pantsSprite, shoesSprite]);
@@ -62,14 +69,23 @@ export default class Player {
         .setOffset((GameConfig.sprite.width - PLAYER_BBOX_WIDTH) / 2, GameConfig.sprite.height - PLAYER_BBOX_HEIGHT);
     });
 
-    // Register all animations
-    AnimationHelper.registerAnimations(this.scene, [
-      hairTexture,
-      bodyTexture,
-      physicalCharacteristicsConfig.chest,
-      physicalCharacteristicsConfig.pants,
-      physicalCharacteristicsConfig.shoes
-    ]);
+    // Register all animations if necessary (animations are global)
+    if (registerAnimations) {
+      AnimationHelper.registerAnimations(this.scene, [
+        hairTexture,
+        bodyTexture,
+        physicalCharacteristics.chest,
+        physicalCharacteristics.pants,
+        physicalCharacteristics.shoes
+      ]);
+    }
+  }
+
+  /**
+   * Returns player's data (usually to be cached and passed between scenes).
+   */
+  getData(): PlayerData {
+    return this.data;
   }
 
   /**

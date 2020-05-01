@@ -23,20 +23,6 @@ export default class FarmHouseBedroomScene extends BaseScene {
   create() {
     super.create();
 
-    this.player = new Player(this, {
-      hair: {
-        style: HairStyle.Bangs,
-        color: HairPalette.Redhead
-      },
-      body: {
-        gender: Gender.Male,
-        skin: SkinPalette.Light
-      },
-      chest: 'chest',
-      pants: 'pants',
-      shoes: 'shoes'
-    });
-
     // Create world from tilemap
     this.map = new Map(this, this.player);
 
