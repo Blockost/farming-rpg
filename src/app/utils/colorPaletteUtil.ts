@@ -201,8 +201,13 @@ export default class ColorPaletteUtil {
       scene.textures.get(tempTextureName).destroy();
     }
 
-    // Destroy palette and original spritesheet
-    scene.textures.get(paletteKey).destroy();
+    // TODO: Can't destroy palette at the moment since it may be used
+    // to load other hairstyles.
+
+    // TODO: Need to think about generating spritehseets on demand
+    // scene.textures.get(paletteKey).destroy();
+
+    // Destroy original texture
     scene.textures.get(baseTexture).destroy();
   }
 }

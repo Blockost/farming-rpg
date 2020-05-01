@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
 import TransitionData from './transitionData';
-import Player, { PlayerData } from '../objects/player';
+import Player from '../objects/player';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
+import { CharacterData } from '../objects/characters/character';
 
 const LOCAL_STORAGE_PLAYER_DATA_KEY = 'PLAYER_DATA';
 
@@ -74,10 +75,12 @@ export default abstract class BaseScene extends Phaser.Scene {
 
     // Add listeners for custom objects to be updated and destroyed
     this.events.on(GameEvent.NEW_OBJECT_TO_UPDATE, (object: Phaser.GameObjects.GameObject) => {
+      console.log('New object to update', object);
       this.customUpdateList.push(object);
     });
 
     this.events.on(GameEvent.OBJECT_DESTROYED, (object: Phaser.GameObjects.GameObject) => {
+      console.log('Object destroyed', object);
       this.customUpdateList.splice(this.customUpdateList.indexOf(object), 1);
     });
 
@@ -97,8 +100,8 @@ export default abstract class BaseScene extends Phaser.Scene {
     console.log(`Creating ${this.key}`);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if (this.transitionData.playerData) {
-      this.player = this.buildPlayerFromData(this.transitionData.playerData);
+    if (this.transitionData.characterData) {
+      this.player = this.buildPlayerFromData(this.transitionData.characterData);
     }
   }
 
@@ -111,7 +114,7 @@ export default abstract class BaseScene extends Phaser.Scene {
    *  on the FPS rate.
    */
   update(time: number, delta: number) {
-    this.customUpdateList.forEach((object) => object.update(time, delta));
+    this.customUpdateList.forEach((object) => object.update(time, delta, this.cursors));
     this.player.update(time, delta, this.cursors);
   }
 
@@ -126,12 +129,12 @@ export default abstract class BaseScene extends Phaser.Scene {
     console.log(`${this.key} is waking up`, data);
     const spawnPoint = this.map.getSpawnPoint(data.targetSpawnPointName);
 
-    this.player = this.buildPlayerFromData(data.playerData);
+    this.player = this.buildPlayerFromData(data.characterData);
     this.map.updatePlayer(this.player);
     this.player.spawnAt(spawnPoint);
   }
 
-  private buildPlayerFromData(playerData: PlayerData): Player {
+  private buildPlayerFromData(playerData: CharacterData): Player {
     console.log('Building player from data');
 
     if (!playerData) {
