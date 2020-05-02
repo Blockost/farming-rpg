@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import FacingDirection, { parseFacingDirection } from 'src/app/utils/facingDirection';
 import TiledCollision from './tiledCollision';
-import Player from '../player';
+import Player from '../characters/player';
 import TransitionData from 'src/app/scenes/transitionData';
 import SceneKey, { parseSceneKey } from 'src/app/scenes/sceneKey';
 
@@ -41,7 +41,7 @@ export default class TiledTransition extends TiledCollision {
   onCollide(player: Player) {
     if (player.getFacingDirection() === this.activateOnFacing) {
       const transitionData: TransitionData = {
-        characterData: player.getData(),
+        playerData: player.getData(),
         targetSpawnPointName: this.targetSpawnPointName
       };
 

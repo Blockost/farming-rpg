@@ -1,7 +1,7 @@
 import TiledCollision from '../objects/tiled/tiledCollision';
 import GameConfig from './gameConfig';
 import TiledSpawnPoint from '../objects/tiled/tiledSpawnPoint';
-import Player from '../objects/player';
+import Player from '../objects/characters/player';
 import BaseScene from '../scenes/base.scene';
 import { parseFacingDirection } from './facingDirection';
 import TiledTransition from '../objects/tiled/tiledTransition';

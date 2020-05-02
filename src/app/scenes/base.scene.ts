@@ -1,10 +1,10 @@
 import * as Phaser from 'phaser';
 import { GameEvent } from '../utils/gameEvent';
 import TransitionData from './transitionData';
-import Player from '../objects/player';
+import Player, { PlayerData } from '../objects/characters/player';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
-import { CharacterData } from '../objects/characters/character';
+import { AbstractCharacterData } from '../objects/characters/abstractCharacter';
 
 const LOCAL_STORAGE_PLAYER_DATA_KEY = 'PLAYER_DATA';
 
@@ -100,8 +100,8 @@ export default abstract class BaseScene extends Phaser.Scene {
     console.log(`Creating ${this.key}`);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    if (this.transitionData.characterData) {
-      this.player = this.buildPlayerFromData(this.transitionData.characterData);
+    if (this.transitionData.playerData) {
+      this.player = this.buildPlayerFromData(this.transitionData.playerData);
     }
   }
 
@@ -114,8 +114,15 @@ export default abstract class BaseScene extends Phaser.Scene {
    *  on the FPS rate.
    */
   update(time: number, delta: number) {
-    this.customUpdateList.forEach((object) => object.update(time, delta, this.cursors));
-    this.player.update(time, delta, this.cursors);
+    this.customUpdateList.forEach((object) => object.update(time, delta));
+    this.player.updatePlayer(time, delta, this.cursors);
+  }
+
+  /**
+   * Add game objects to this scene's update list.
+   */
+  addToUpdateLoop(objects: any) {
+    this.customUpdateList.push(...objects);
   }
 
   protected onSceneSleep() {
@@ -129,12 +136,12 @@ export default abstract class BaseScene extends Phaser.Scene {
     console.log(`${this.key} is waking up`, data);
     const spawnPoint = this.map.getSpawnPoint(data.targetSpawnPointName);
 
-    this.player = this.buildPlayerFromData(data.characterData);
+    this.player = this.buildPlayerFromData(data.playerData);
     this.map.updatePlayer(this.player);
     this.player.spawnAt(spawnPoint);
   }
 
-  private buildPlayerFromData(playerData: CharacterData): Player {
+  private buildPlayerFromData(playerData: PlayerData): Player {
     console.log('Building player from data');
 
     if (!playerData) {

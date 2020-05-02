@@ -1,6 +1,6 @@
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
-import Player from '../objects/player';
+import Player from '../objects/characters/player';
 import { SkinPalette, HairPalette, HairStyle, Gender } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';

@@ -4,6 +4,7 @@ import FacingDirection from '../../utils/facingDirection';
 import GameConfig from '../../utils/gameConfig';
 import TiledSpawnPoint from '../tiled/tiledSpawnPoint';
 import { SkinPalette, HairPalette, HairStyle, Gender } from '../../utils/colorPaletteUtil';
+import BaseScene from 'src/app/scenes/base.scene';
 
 const DEFAULT_VELOCITY_X = 140;
 const DEFAULT_VELOCITY_Y = 140;
@@ -11,7 +12,7 @@ const DEFAULT_VELOCITY_Y = 140;
 const BBOX_WIDTH = 20;
 const BBOX_HEIGHT = 10;
 
-export interface CharacterData {
+export interface AbstractCharacterData {
   name: string;
   physicalCharacteristicsConfig: PhysicalCharacteristics;
 }
@@ -36,15 +37,19 @@ interface BodyCharacteristics {
   skin: SkinPalette;
 }
 
-export default class Character {
+export default abstract class AbstractCharacter {
   private scene: Phaser.Scene;
-  private characterData: CharacterData;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
   private physicsGroup: Phaser.Physics.Arcade.Group;
 
-  constructor(scene: Phaser.Scene, data: CharacterData, registerAnimations = false) {
+  // Movement variables
+  private goLeft = false;
+  private goRight = false;
+  private goUp = false;
+  private goDown = false;
+
+  constructor(scene: BaseScene, data: AbstractCharacterData, registerAnimations = false) {
     this.scene = scene;
-    this.characterData = data;
     const physicalCharacteristics = data.physicalCharacteristicsConfig;
 
     // Shadow is created first so that other sprites are automatically rendered on top of it
@@ -93,13 +98,6 @@ export default class Character {
   }
 
   /**
-   * Returns player's data (usually to be cached and passed between scenes).
-   */
-  getData(): CharacterData {
-    return this.characterData;
-  }
-
-  /**
    * Returns the first active sprite from player's sprite group.
    */
   getSprite(): Phaser.Physics.Arcade.Sprite {
@@ -119,6 +117,20 @@ export default class Character {
     return this.facingDirection;
   }
 
+  setMovement(goLeft: boolean, goRight: boolean, goUp: boolean, goDown: boolean, duration?: number) {
+    this.goLeft = goLeft;
+    this.goRight = goRight;
+    this.goDown = goDown;
+    this.goUp = goUp;
+
+    if (duration) {
+      setTimeout(() => this.setMovement(false, false, false, false), duration);
+    }
+  }
+
+  /**
+   * Spaws this character at a specific location (x,y) facing a specific direction.
+   */
   spawnAt(spawnPoint: TiledSpawnPoint) {
     this.physicsGroup.setXY(spawnPoint.x, spawnPoint.y);
 
@@ -135,18 +147,21 @@ export default class Character {
     this.physicsGroup.setDepth(depth);
   }
 
-  update(time: number, delta: number, cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
+  /**
+   * Character's update loop.
+   */
+  update(time: number, delta: number) {
     // Reset velocity from previous frame
     this.applyVelocityX(0);
     this.applyVelocityY(0);
 
-    if (cursors.left.isDown) {
+    if (this.goLeft) {
       this.moveLeft();
-    } else if (cursors.right.isDown) {
+    } else if (this.goRight) {
       this.moveRight();
-    } else if (cursors.down.isDown) {
+    } else if (this.goDown) {
       this.moveDown();
-    } else if (cursors.up.isDown) {
+    } else if (this.goUp) {
       this.moveUp();
     } else {
       // No movement, go idle

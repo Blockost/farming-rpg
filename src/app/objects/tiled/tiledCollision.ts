@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import Player from '../player';
+import Player from '../characters/player';
 
 /**
  * Class that reprensents a collision object in Tiled

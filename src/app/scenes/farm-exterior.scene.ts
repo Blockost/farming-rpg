@@ -1,4 +1,4 @@
-import Player from '../objects/player';
+import Player, { PlayerData } from '../objects/characters/player';
 import ColorPaletteUtil, {
   SkinPalette,
   HairPalette,
@@ -10,9 +10,8 @@ import GameConfig from '../utils/gameConfig';
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
-import Character, { CharacterData } from '../objects/characters/character';
 import FacingDirection from '../utils/facingDirection';
-import { GameEvent } from '../utils/gameEvent';
+import NonPlayableCharacter, { NonPlayableCharacterData } from '../objects/characters/npc';
 
 const MAP_KEY = 'map_farm';
 
@@ -86,20 +85,22 @@ export default class FarmExteriorScene extends BaseScene {
 
     // TODO: This should be created by another scene that handles player customization
     // at the start of the game
-    const playerData: CharacterData = {
-      name: 'Blockost',
-      physicalCharacteristicsConfig: {
-        hair: {
-          style: HairStyle.Xlongknot,
-          color: HairPalette.Green
-        },
-        body: {
-          gender: Gender.Male,
-          skin: SkinPalette.Light
-        },
-        chest: 'chest',
-        pants: 'pants',
-        shoes: 'shoes'
+    const playerData: PlayerData = {
+      abstractCharacterData: {
+        name: 'Blockost',
+        physicalCharacteristicsConfig: {
+          hair: {
+            style: HairStyle.Xlongknot,
+            color: HairPalette.Green
+          },
+          body: {
+            gender: Gender.Male,
+            skin: SkinPalette.Light
+          },
+          chest: 'chest',
+          pants: 'pants',
+          shoes: 'shoes'
+        }
       }
     };
 
@@ -121,78 +122,82 @@ export default class FarmExteriorScene extends BaseScene {
       );
 
     // Add other characters to the scene
-    const tristamCharacterData: CharacterData = {
-      name: 'Tristam',
-      physicalCharacteristicsConfig: {
-        hair: {
-          style: HairStyle.Bangs,
-          color: HairPalette.Black
-        },
-        body: {
-          gender: Gender.Male,
-          skin: SkinPalette.Dark2
-        },
-        chest: 'chest',
-        pants: 'pants',
-        shoes: 'shoes'
+    const tristamCharacterData: NonPlayableCharacterData = {
+      abstractCharacterData: {
+        name: 'Tristam',
+        physicalCharacteristicsConfig: {
+          hair: {
+            style: HairStyle.Bangs,
+            color: HairPalette.Black
+          },
+          body: {
+            gender: Gender.Male,
+            skin: SkinPalette.Dark2
+          },
+          chest: 'chest',
+          pants: 'pants',
+          shoes: 'shoes'
+        }
       }
     };
-    const tristam = new Character(this, tristamCharacterData, true);
+    const tristam = new NonPlayableCharacter(this, tristamCharacterData, true);
     tristam.spawnAt({
       x: playerSpawnPoint.x + Math.random() * 200,
       y: playerSpawnPoint.y - Math.random() * 200,
       facingDirection: FacingDirection.LEFT
     });
 
-    const kevinCharacterData: CharacterData = {
-      name: 'Kevin',
-      physicalCharacteristicsConfig: {
-        hair: {
-          style: HairStyle.Mohawk,
-          color: HairPalette.Redhead
-        },
-        body: {
-          gender: Gender.Male,
-          skin: SkinPalette.DarkElf
-        },
-        chest: 'chest',
-        pants: 'pants',
-        shoes: 'shoes'
+    const kevinCharacterData: NonPlayableCharacterData = {
+      abstractCharacterData: {
+        name: 'Kevin',
+        physicalCharacteristicsConfig: {
+          hair: {
+            style: HairStyle.Mohawk,
+            color: HairPalette.Redhead
+          },
+          body: {
+            gender: Gender.Male,
+            skin: SkinPalette.DarkElf
+          },
+          chest: 'chest',
+          pants: 'pants',
+          shoes: 'shoes'
+        }
       }
     };
-    const kevin = new Character(this, kevinCharacterData, true);
+    const kevin = new NonPlayableCharacter(this, kevinCharacterData, true);
     kevin.spawnAt({
       x: playerSpawnPoint.x + Math.random() * 200,
       y: playerSpawnPoint.y + Math.random() * 200,
       facingDirection: FacingDirection.RIGHT
     });
 
-    const aliciaCharacterData: CharacterData = {
-      name: 'Alicia',
-      physicalCharacteristicsConfig: {
-        hair: {
-          style: HairStyle.Messy1,
-          color: HairPalette.WhiteCyan
-        },
-        body: {
-          gender: Gender.Male,
-          // TODO: Should be a female here
-          skin: SkinPalette.Tanned
-        },
-        chest: 'chest',
-        pants: 'pants',
-        shoes: 'shoes'
+    const aliciaCharacterData: NonPlayableCharacterData = {
+      abstractCharacterData: {
+        name: 'Alicia',
+        physicalCharacteristicsConfig: {
+          hair: {
+            style: HairStyle.Messy1,
+            color: HairPalette.WhiteCyan
+          },
+          body: {
+            gender: Gender.Male,
+            // TODO: Should be a female here
+            skin: SkinPalette.Tanned
+          },
+          chest: 'chest',
+          pants: 'pants',
+          shoes: 'shoes'
+        }
       }
     };
-    const alicia = new Character(this, aliciaCharacterData, true);
+    const alicia = new NonPlayableCharacter(this, aliciaCharacterData, true);
     alicia.spawnAt({
       x: playerSpawnPoint.x - Math.random() * 200,
       y: playerSpawnPoint.y + Math.random() * 200,
       facingDirection: FacingDirection.DOWN
     });
 
-    this.events.emit(GameEvent.NEW_OBJECT_TO_UPDATE, tristam);
-    this.events.emit(GameEvent.NEW_OBJECT_TO_UPDATE, kevin);
-    this.events.emit(GameEvent.NEW_OBJECT_TO_UPDATE, alicia);
+    this.addToUpdateLoop([tristam, kevin, alicia]);
   }
 }
