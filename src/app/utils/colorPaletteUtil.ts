@@ -193,8 +193,8 @@ export default class ColorPaletteUtil {
       const spriteSheetFromPalette = `${baseTexture}-${currentPaletteName}`;
       console.log(`Adding '${spriteSheetFromPalette}' to TextureManager`);
       scene.textures.addSpriteSheet(spriteSheetFromPalette, canvasTexture.getSourceImage() as HTMLImageElement, {
-        frameWidth: GameConfig.sprite.width,
-        frameHeight: GameConfig.sprite.height
+        frameWidth: GameConfig.sprite.character.width,
+        frameHeight: GameConfig.sprite.character.height
       });
 
       // Destroy temporary canvas

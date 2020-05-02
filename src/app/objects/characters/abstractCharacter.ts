@@ -138,7 +138,7 @@ export default abstract class AbstractCharacter {
     const shadowSprite = this.physicsGroup
       .getChildren()
       .find((sprite) => sprite.name === 'shadow') as Phaser.Physics.Arcade.Sprite;
-    shadowSprite.setPosition(spawnPoint.x, spawnPoint.y + GameConfig.sprite.height / 2 - shadowSprite.height / 2);
+    shadowSprite.setPosition(spawnPoint.x, spawnPoint.y + GameConfig.sprite.character.height / 2 - shadowSprite.height / 2);
 
     this.facingDirection = spawnPoint.facingDirection;
   }

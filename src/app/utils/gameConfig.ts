@@ -13,8 +13,14 @@ const GameConfig = {
     }
   },
   sprite: {
-    width: 64,
-    height: 64
+    character: {
+      width: 64,
+      height: 64
+    },
+    crop: {
+      width: 32,
+      height: 64
+    }
   },
   spritesheet: {
     maxNumberOfSpritesPerRow: 13
