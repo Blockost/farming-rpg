@@ -5,6 +5,7 @@ import GameConfig from '../../utils/gameConfig';
 import TiledSpawnPoint from '../tiled/tiledSpawnPoint';
 import { SkinPalette, HairPalette, HairStyle, Gender } from '../../utils/colorPaletteUtil';
 import BaseScene from 'src/app/scenes/base.scene';
+import UpdatableObject from '../updatableObject';
 
 const DEFAULT_VELOCITY_X = 140;
 const DEFAULT_VELOCITY_Y = 140;
@@ -37,7 +38,7 @@ interface BodyCharacteristics {
   skin: SkinPalette;
 }
 
-export default abstract class AbstractCharacter {
+export default abstract class AbstractCharacter implements UpdatableObject {
   private scene: Phaser.Scene;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
   private physicsGroup: Phaser.Physics.Arcade.Group;
@@ -171,25 +172,25 @@ export default abstract class AbstractCharacter {
 
   private moveLeft() {
     this.applyVelocityX(DEFAULT_VELOCITY_X * -1);
-    this.play(ANIMATION_KEYS.WALK_LEFT, true);
+    this.play(ANIMATION_KEYS.WALK_LEFT);
     this.facingDirection = FacingDirection.LEFT;
   }
 
   private moveRight() {
     this.applyVelocityX(DEFAULT_VELOCITY_X);
-    this.play(ANIMATION_KEYS.WALK_RIGHT, true);
+    this.play(ANIMATION_KEYS.WALK_RIGHT);
     this.facingDirection = FacingDirection.RIGHT;
   }
 
   private moveUp() {
     this.applyVelocityY(DEFAULT_VELOCITY_Y * -1);
-    this.play(ANIMATION_KEYS.WALK_UP, true);
+    this.play(ANIMATION_KEYS.WALK_UP);
     this.facingDirection = FacingDirection.UP;
   }
 
   private moveDown() {
     this.applyVelocityY(DEFAULT_VELOCITY_Y);
-    this.play(ANIMATION_KEYS.WALK_DOWN, true);
+    this.play(ANIMATION_KEYS.WALK_DOWN);
     this.facingDirection = FacingDirection.DOWN;
   }
 
@@ -227,12 +228,12 @@ export default abstract class AbstractCharacter {
   /**
    * Plays the given animation for all the sprites.
    */
-  private play(animationName: string, ignoreIfPlaying?: boolean, startFrame?: number) {
+  private play(animationName: string, startFrame?: number) {
     this.physicsGroup
       .getChildren()
       .filter((sprite) => sprite.name !== 'shadow')
       .forEach((sprite: Phaser.Physics.Arcade.Sprite) => {
-        sprite.play(AnimationHelper.buildAnimationKey(sprite.texture.key, animationName), ignoreIfPlaying, startFrame);
+        sprite.play(AnimationHelper.buildAnimationKey(sprite.texture.key, animationName), true, startFrame);
       });
   }
 }

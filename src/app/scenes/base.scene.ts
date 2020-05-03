@@ -4,7 +4,7 @@ import TransitionData from './transitionData';
 import Player, { PlayerData } from '../objects/characters/player';
 import SceneKey from './sceneKey';
 import Map from '../utils/map';
-import { AbstractCharacterData } from '../objects/characters/abstractCharacter';
+import UpdatableObject from '../objects/updatableObject';
 
 const LOCAL_STORAGE_PLAYER_DATA_KEY = 'PLAYER_DATA';
 
@@ -47,7 +47,7 @@ export default abstract class BaseScene extends Phaser.Scene {
    */
   protected map: Map;
 
-  private customUpdateList: Phaser.GameObjects.GameObject[] = [];
+  private customUpdateList: UpdatableObject[] = [];
 
   constructor(key: SceneKey, mapKey: string, config?: Phaser.Types.Scenes.SettingsConfig) {
     super({ key, ...config });
@@ -121,7 +121,7 @@ export default abstract class BaseScene extends Phaser.Scene {
   /**
    * Add game objects to this scene's update list.
    */
-  addToUpdateLoop(objects: any) {
+  addToUpdateLoop(...objects: UpdatableObject[]) {
     this.customUpdateList.push(...objects);
   }
 

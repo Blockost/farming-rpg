@@ -12,6 +12,7 @@ import SceneKey from './sceneKey';
 import Map from '../utils/map';
 import FacingDirection from '../utils/facingDirection';
 import NonPlayableCharacter, { NonPlayableCharacterData } from '../objects/characters/npc';
+import Crop, { CropType } from '../objects/crops/crop';
 
 const MAP_KEY = 'map_farm';
 
@@ -212,6 +213,31 @@ export default class FarmExteriorScene extends BaseScene {
       facingDirection: FacingDirection.DOWN
     });
 
-    this.addToUpdateLoop([tristam, kevin, alicia]);
+    this.addToUpdateLoop(tristam, kevin, alicia);
+
+    // Building animations for crops
+    extractNamesFromEnum(CropType).forEach((cropType, index) => {
+      for (let growthStage = 0; growthStage < 5; growthStage++) {
+        this.anims.create({
+          key: `${cropType}_stage${growthStage}`,
+          defaultTextureKey: 'crops',
+          frames: [{ key: 'crops', frame: index * 5 + growthStage }]
+        });
+      }
+    });
+
+    // Building crop sparkles animation
+    const sparkleFrames = this.anims.generateFrameNumbers('crops_sparkles', { start: 0, end: 4 });
+    console.log('sparkle frames', sparkleFrames);
+    this.anims.create({
+      key: 'sparkle',
+      defaultTextureKey: 'crops_sparkles',
+      frames: sparkleFrames,
+      repeat: -1,
+      frameRate: 10
+    });
+
+    const tomatoCrop = new Crop(this, CropType.Corn, 200, 200);
+    this.addToUpdateLoop(tomatoCrop);
   }
 }
