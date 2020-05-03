@@ -12,4 +12,19 @@ export default class EnumHelper {
 
     return enumKeys[Math.floor(Math.random() * enumKeys.length)];
   }
+
+  static extractNamesFromEnum(anyEnum: any) {
+    return Object.keys(anyEnum).filter((name) => isNaN(Number(name)));
+  }
+
+  static getNextInEnum(anyEnum: any, currentValue: any): any {
+    const enumNames = EnumHelper.extractNamesFromEnum(anyEnum);
+    let currentIndexInEnum = enumNames.findIndex((name) => name == currentValue);
+
+    if (currentIndexInEnum === enumNames.length - 1) {
+      return anyEnum[enumNames[0]];
+    }
+
+    return anyEnum[enumNames[++currentIndexInEnum]];
+  }
 }

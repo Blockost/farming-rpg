@@ -1,61 +1,58 @@
 import BaseScene from '../scenes/base.scene';
 import GameConfig from './gameConfig';
+import EnumHelper from './enumHelper';
 
-export const extractNamesFromEnum = (enumarated: any) => {
-  return Object.keys(enumarated)
-    .filter((name) => isNaN(Number(name)))
-    .map((name) => name.toLowerCase());
-};
+
 
 export enum HairStyle {
-  Bangs = 'bangs',
-  Loose = 'loose',
-  Mohawk = 'mohawk',
-  Messy1 = 'messy1',
-  Messy2 = 'messy2',
-  Xlongknot = 'xlongknot'
+  Bangs = 'Bangs',
+  Loose = 'Loose',
+  Mohawk = 'Mohawk',
+  Messy1 = 'Messy1',
+  Messy2 = 'Messy2',
+  Xlongknot = 'Xlongknot'
 }
 
 export enum SkinPalette {
-  Light = 'light',
-  Tanned = 'tanned',
-  Tanned2 = 'tanned2',
-  Dark = 'dark',
-  Dark2 = 'dark2',
-  DarkElf = 'darkelf',
-  DarkElf2 = 'darkelf2',
-  Albino = 'albino',
-  Albino2 = 'albino2',
-  Orc = 'orc',
-  RedOrc = 'redorc'
+  Light = 'Light',
+  Tanned = 'Tanned',
+  Tanned2 = 'Tanned2',
+  Dark = 'Dark',
+  Dark2 = 'Dark2',
+  DarkElf = 'DarkElf',
+  DarkElf2 = 'DarkElf2',
+  Albino = 'Albino',
+  Albino2 = 'Albino2',
+  Orc = 'Orc',
+  RedOrc = 'RedOrc'
 }
 
 export enum HairPalette {
-  Default = 'default',
-  Black = 'black',
-  Blonde = 'blonde',
-  Blonde2 = 'blonde2',
-  Blue = 'blue',
-  Blue2 = 'blue2',
-  Brown = 'brown',
-  Brunette = 'brunette',
-  Brunette2 = 'brunette2',
-  DarkBlonde = 'darkblonde',
-  Gray = 'gray',
-  Green = 'green',
-  Green2 = 'green2',
-  LightBlonde = 'lightblonde',
-  LightBlonde2 = 'lightblonde2',
-  Pink = 'pink',
-  Pink2 = 'pink2',
-  Raven = 'raven',
-  Raven2 = 'raven2',
-  Redhead = 'redhead',
-  RubyRed = 'rubyred',
-  White = 'white',
-  WhiteBlonde = 'whiteblonde',
-  WhiteBlonde2 = 'whiteblonde2',
-  WhiteCyan = 'whitecyan'
+  Default = 'Default',
+  Black = 'Black',
+  Blonde = 'Blonde',
+  Blonde2 = 'Blonde2',
+  Blue = 'Blue',
+  Blue2 = 'Blue2',
+  Brown = 'Brown',
+  Brunette = 'Brunette',
+  Brunette2 = 'Brunette2',
+  DarkBlonde = 'DarkBlonde',
+  Gray = 'Gray',
+  Green = 'Green',
+  Green2 = 'Green2',
+  LightBlonde = 'LightBlonde',
+  LightBlonde2 = 'LightBlonde2',
+  Pink = 'Pink',
+  Pink2 = 'Pink2',
+  Raven = 'Raven',
+  Raven2 = 'Raven2',
+  Redhead = 'Redhead',
+  RubyRed = 'RubyRed',
+  White = 'White',
+  WhiteBlonde = 'WhiteBlonde',
+  WhiteBlonde2 = 'WhiteBlonde2',
+  WhiteCyan = 'WhiteCyan'
 }
 
 export enum Gender {
@@ -75,7 +72,7 @@ interface PaletteConfig<T extends SkinPalette | HairPalette> {
 }
 
 const SKIN_PALETTE_CONFIG: PaletteConfig<SkinPalette> = {
-  names: extractNamesFromEnum(SkinPalette),
+  names: EnumHelper.extractNamesFromEnum(SkinPalette),
   defaultColor: SkinPalette.Light,
   colorWidth: 16,
   colorHeight: 16,
@@ -85,7 +82,7 @@ const SKIN_PALETTE_CONFIG: PaletteConfig<SkinPalette> = {
 };
 
 const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
-  names: extractNamesFromEnum(HairPalette),
+  names: EnumHelper.extractNamesFromEnum(HairPalette),
   defaultColor: HairPalette.Black,
   colorWidth: 16,
   colorHeight: 16,
@@ -103,11 +100,11 @@ const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
 export default class ColorPaletteUtil {
   static createSkinTextures(scene: BaseScene, paletteKey: string, baseSkinTexture: string) {
     // TODO: Support different gender
-    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, baseSkinTexture);
+    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, baseSkinTexture.toLowerCase());
   }
 
   static createHairTextures(scene: BaseScene, paletteKey: string, baseHairTexture: HairStyle) {
-    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, baseHairTexture);
+    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, baseHairTexture.toLowerCase());
   }
 
   /**

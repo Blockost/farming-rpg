@@ -2,13 +2,13 @@ import BaseScene from 'src/app/scenes/base.scene';
 import UpdatableObject from '../updatableObject';
 
 export enum CropType {
-  Tomato = 'tomato',
-  Potato = 'potato',
-  Carrot = 'carrot',
-  Artichoke = 'artichoke',
-  Chilli = 'chilli',
-  Gourd = 'gourd',
-  Corn = 'corn'
+  Tomato = 'Tomato',
+  Potato = 'Potato',
+  Carrot = 'Carrot',
+  Artichoke = 'Artichoke',
+  Chilli = 'Chilli',
+  Gourd = 'Gourd',
+  Corn = 'Corn'
 }
 
 interface CropProperties {

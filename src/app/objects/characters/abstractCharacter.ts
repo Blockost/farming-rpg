@@ -39,7 +39,7 @@ interface BodyCharacteristics {
 }
 
 export default abstract class AbstractCharacter implements UpdatableObject {
-  private scene: Phaser.Scene;
+  protected scene: BaseScene;
   private facingDirection: FacingDirection = FacingDirection.DOWN;
   private physicsGroup: Phaser.Physics.Arcade.Group;
 
@@ -62,7 +62,7 @@ export default abstract class AbstractCharacter implements UpdatableObject {
     const bodySprite = this.scene.physics.add.sprite(200, 200, bodyTexture);
     bodySprite.name = 'body';
 
-    const hairTexture = `${physicalCharacteristics.hair.style}-${physicalCharacteristics.hair.color}`;
+    const hairTexture = `${physicalCharacteristics.hair.style.toLowerCase()}-${physicalCharacteristics.hair.color}`;
     const hairSprite = this.scene.physics.add.sprite(200, 200, hairTexture);
 
     const chestSprite = this.scene.physics.add.sprite(200, 200, physicalCharacteristics.chest);
@@ -139,7 +139,10 @@ export default abstract class AbstractCharacter implements UpdatableObject {
     const shadowSprite = this.physicsGroup
       .getChildren()
       .find((sprite) => sprite.name === 'shadow') as Phaser.Physics.Arcade.Sprite;
-    shadowSprite.setPosition(spawnPoint.x, spawnPoint.y + GameConfig.sprite.character.height / 2 - shadowSprite.height / 2);
+    shadowSprite.setPosition(
+      spawnPoint.x,
+      spawnPoint.y + GameConfig.sprite.character.height / 2 - shadowSprite.height / 2
+    );
 
     this.facingDirection = spawnPoint.facingDirection;
   }

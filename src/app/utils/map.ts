@@ -10,10 +10,6 @@ const SPAWN_POINT_LAYER_KEY = 'spawn_points';
 const COLLISIONS_LAYER_KEY = 'collisions';
 const ABOVE_PLAYER_LAYER_KEY = 'above_player';
 
-const PLAYER_DEPTH = 1;
-const ABOVE_PLAYER_LAYER_DEPTH = 100;
-const DEBUG_LAYER_DEPTH = 101;
-
 /**
  * Wrapper class to work with maps built with Tiled.
  */
@@ -45,7 +41,7 @@ export default class Map {
 
       // If the map contains a layer called 'above_player', then renders it above everything else
       if (layer.name === ABOVE_PLAYER_LAYER_KEY) {
-        staticLayer.setDepth(ABOVE_PLAYER_LAYER_DEPTH);
+        staticLayer.setDepth(GameConfig.map.abovePlayerLayerDepth);
       }
     });
 
@@ -54,12 +50,12 @@ export default class Map {
     this.enablesCollisionWithPlayer(player);
 
     // Render player above the rest of the world (at depth 0 by default)
-    player.setDepth(PLAYER_DEPTH);
+    player.setDepth(GameConfig.map.playerDepth);
 
     // If debug set to true, create a debug graphics that will fill collision rectangles
     // with a debug color. Collision objects are declaring there own debug color
     if (GameConfig.physics.showCollisionObjectsDebug) {
-      const graphics = scene.add.graphics().setDepth(DEBUG_LAYER_DEPTH);
+      const graphics = scene.add.graphics().setDepth(GameConfig.map.debugLayerDepth);
       this.collisions.forEach((tiledCollision) => tiledCollision.showDebug(graphics));
     }
   }

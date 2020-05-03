@@ -10,7 +10,11 @@ const GameConfig = {
     tileSize: {
       width: 32,
       height: 32
-    }
+    },
+    playerDepth: 1,
+    abovePlayerLayerDepth: 100,
+    debugLayerDepth: 101,
+    aboveEverythingLayerDepth: 1000
   },
   sprite: {
     character: {

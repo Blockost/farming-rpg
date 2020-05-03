@@ -1,11 +1,5 @@
 import Player, { PlayerData } from '../objects/characters/player';
-import ColorPaletteUtil, {
-  SkinPalette,
-  HairPalette,
-  HairStyle,
-  Gender,
-  extractNamesFromEnum
-} from '../utils/colorPaletteUtil';
+import ColorPaletteUtil, { SkinPalette, HairPalette, HairStyle, Gender } from '../utils/colorPaletteUtil';
 import GameConfig from '../utils/gameConfig';
 import BaseScene from './base.scene';
 import SceneKey from './sceneKey';
@@ -13,6 +7,7 @@ import Map from '../utils/map';
 import FacingDirection from '../utils/facingDirection';
 import NonPlayableCharacter, { NonPlayableCharacterData } from '../objects/characters/npc';
 import Crop, { CropType } from '../objects/crops/crop';
+import EnumHelper from '../utils/enumHelper';
 
 const MAP_KEY = 'map_farm';
 
@@ -36,12 +31,15 @@ export default class FarmExteriorScene extends BaseScene {
 
     // Loading hair styles
     // TODO: Think about deleting those textures if not needed (player + npc may not use every hair style possible)
-    extractNamesFromEnum(HairStyle).forEach((name) =>
-      this.load.spritesheet(name, `/assets/spritesheets/characters/hair/male/${name}.png`, {
-        frameWidth: GameConfig.sprite.character.width,
-        frameHeight: GameConfig.sprite.character.height
-      })
-    );
+    EnumHelper.extractNamesFromEnum(HairStyle)
+      // We use lowercased name here because that's how the assets are named
+      .map((name) => name.toLowerCase())
+      .forEach((name) =>
+        this.load.spritesheet(name, `/assets/spritesheets/characters/hair/male/${name}.png`, {
+          frameWidth: GameConfig.sprite.character.width,
+          frameHeight: GameConfig.sprite.character.height
+        })
+      );
 
     this.load.spritesheet('chest', '/assets/spritesheets/characters/chest/male/leather.png', {
       frameWidth: GameConfig.sprite.character.width,
@@ -87,6 +85,16 @@ export default class FarmExteriorScene extends BaseScene {
 
   create() {
     super.create();
+
+    // Building anumations for crops when picked
+    EnumHelper.extractNamesFromEnum(CropType).forEach((cropType, index) => {
+      console.log(index);
+      this.anims.create({
+        key: `${cropType}_picked`,
+        defaultTextureKey: 'crops_picked',
+        frames: [{ key: 'crops_picked', frame: index }]
+      });
+    });
 
     // TODO: 2020-04-26 Blockost Move this outside of the scene. Many of the sprites/textures can be loaded
     // in a "loading" scene since TextureManager is shared between all scenes anyway.
@@ -216,7 +224,7 @@ export default class FarmExteriorScene extends BaseScene {
     this.addToUpdateLoop(tristam, kevin, alicia);
 
     // Building animations for crops
-    extractNamesFromEnum(CropType).forEach((cropType, index) => {
+    EnumHelper.extractNamesFromEnum(CropType).forEach((cropType, index) => {
       for (let growthStage = 0; growthStage < 5; growthStage++) {
         this.anims.create({
           key: `${cropType}_stage${growthStage}`,
@@ -227,12 +235,10 @@ export default class FarmExteriorScene extends BaseScene {
     });
 
     // Building crop sparkles animation
-    const sparkleFrames = this.anims.generateFrameNumbers('crops_sparkles', { start: 0, end: 4 });
-    console.log('sparkle frames', sparkleFrames);
     this.anims.create({
       key: 'sparkle',
       defaultTextureKey: 'crops_sparkles',
-      frames: sparkleFrames,
+      frames: this.anims.generateFrameNumbers('crops_sparkles', { start: 0, end: 4 }),
       repeat: -1,
       frameRate: 10
     });
