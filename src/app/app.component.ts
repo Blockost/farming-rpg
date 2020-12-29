@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import AwaitLoaderPlugin from 'phaser3-rex-plugins/plugins/awaitloader-plugin.js';
 import BootScene from './scenes/boot.scene';
 import FarmExteriorScene from './scenes/farm-exterior.scene';
 import FarmHouseBedroomScene from './scenes/farm-house-bedroom.scene';
@@ -27,16 +26,7 @@ export class AppComponent implements OnInit {
           debug: GameConfig.physics.showEngineDebug
         }
       },
-      scene: [BootScene, PreloaderScene, FarmExteriorScene, FarmHouseFloorScene, FarmHouseBedroomScene],
-      plugins: {
-        global: [
-          {
-            key: 'rexAwaitLoader',
-            plugin: AwaitLoaderPlugin,
-            start: true
-          }
-        ]
-      }
+      scene: [BootScene, PreloaderScene, FarmExteriorScene, FarmHouseFloorScene, FarmHouseBedroomScene]
     };
   }
 
