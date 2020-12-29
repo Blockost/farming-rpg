@@ -1,5 +1,5 @@
-import AbstractCharacter, { AbstractCharacterData } from './abstractCharacter';
 import BaseScene from 'src/app/scenes/base.scene';
+import AbstractCharacter, { AbstractCharacterData } from './abstractCharacter';
 
 /**
  * Custom data for NPCs
@@ -15,7 +15,7 @@ export default class NonPlayableCharacter extends AbstractCharacter {
   constructor(scene: BaseScene, data: NonPlayableCharacterData, registerAnimations = false) {
     super(scene, data.abstractCharacterData, registerAnimations);
 
-    // Add some basic wandering movement with a bunch a random stuff to make NPCs more alive
+    // Add some basic wandering movement with a bunch a random stuff to make NPCs look more alive
     // and less like brainless robots.
     // These timers will be paused/resumed when scene is put to sleep/waking up
     const randomDelay = Math.random() * 3000 + 3000;
@@ -24,7 +24,8 @@ export default class NonPlayableCharacter extends AbstractCharacter {
       loop: true,
       callbackScope: this,
       callback: () => {
-        console.log(`${data.abstractCharacterData.name} is choosing where to move`);
+        // TODO: 2020-12-29 Blockost Add different logging level and add a global level parameter in gameConfig.ts
+        // console.log(`${data.abstractCharacterData.name} is choosing where to move`);
         const randomDirection = Math.random();
         const randomDuration = Math.random() * 100 + 300;
         if (randomDirection < 0.2) this.setMovement(true, false, false, false, randomDuration);

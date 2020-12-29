@@ -1,4 +1,6 @@
 enum SceneKey {
+  BootScene = 'BOOT',
+  PreloaderScene = 'PRELOADER',
   FarmExteriorScene = 'FARM_EXTERIOR',
   FarmHouseFloorScene = 'FARM_HOUSE_FLOOR',
   FarmHouseBedroom = 'FARM_HOUSE_BEDROOM'

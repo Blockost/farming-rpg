@@ -1,8 +1,5 @@
-import BaseScene from '../scenes/base.scene';
-import GameConfig from './gameConfig';
 import EnumHelper from './enumHelper';
-
-
+import GameConfig from './gameConfig';
 
 export enum HairStyle {
   Bangs = 'Bangs',
@@ -91,6 +88,9 @@ const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
   height: 400
 };
 
+export const SKIN_PALETTE_KEY = 'skin_palette';
+export const HAIR_PALETTE_KEY = 'hair_palette';
+
 /**
  * Util class to dynamically create spritesheets with color from palettes.
  *
@@ -98,24 +98,24 @@ const HAIR_PALETTE_CONFIG: PaletteConfig<HairPalette> = {
  * and sprites in the future.
  */
 export default class ColorPaletteUtil {
-  static createSkinTextures(scene: BaseScene, paletteKey: string, baseSkinTexture: string) {
+  static createSkinTextures(scene: Phaser.Scene, baseSkinTexture: string): void {
     // TODO: Support different gender
-    ColorPaletteUtil.createPalettes(scene, paletteKey, SKIN_PALETTE_CONFIG, baseSkinTexture.toLowerCase());
+    ColorPaletteUtil.createPalettes(scene, SKIN_PALETTE_KEY, SKIN_PALETTE_CONFIG, baseSkinTexture.toLowerCase());
   }
 
-  static createHairTextures(scene: BaseScene, paletteKey: string, baseHairTexture: HairStyle) {
-    ColorPaletteUtil.createPalettes(scene, paletteKey, HAIR_PALETTE_CONFIG, baseHairTexture.toLowerCase());
+  static createHairTextures(scene: Phaser.Scene, baseHairTexture: HairStyle): void {
+    ColorPaletteUtil.createPalettes(scene, HAIR_PALETTE_KEY, HAIR_PALETTE_CONFIG, baseHairTexture.toLowerCase());
   }
 
   /**
    * Create different palette from a base spritesheet.
    */
   static createPalettes<T extends SkinPalette | HairPalette>(
-    scene: BaseScene,
+    scene: Phaser.Scene,
     paletteKey: string,
     paletteConfig: PaletteConfig<T>,
     baseTexture: string
-  ) {
+  ): void {
     const numberOfColorInPalette = paletteConfig.width / paletteConfig.colorWidth;
 
     const colorLookup = new Map<string, Phaser.Display.Color[]>();

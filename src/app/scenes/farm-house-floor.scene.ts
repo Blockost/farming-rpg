@@ -1,7 +1,7 @@
-import BaseScene from './base.scene';
-import SceneKey from './sceneKey';
 import GameConfig from '../utils/gameConfig';
 import Map from '../utils/map';
+import BaseScene from './base.scene';
+import SceneKey from './sceneKey';
 
 const MAP_KEY = 'map_farm_house_floor';
 
@@ -13,6 +13,7 @@ export default class FarmHouseFloorScene extends BaseScene {
   preload() {
     super.preload();
 
+    // Load map and associated tilesets
     this.load.tilemapTiledJSON(this.mapKey, '/assets/tilemaps/farm_house_floor.json');
     this.load.image('interior', '/assets/spritesheets/tiled/interior.png');
   }
